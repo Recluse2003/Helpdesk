@@ -12,8 +12,8 @@ flowchart TD
     C -- No --> D[Show validation errors]
     D --> B
     C -- Yes --> E[Ticket created]
-    E --> F[Agent views support queue]
-    F --> G[Agent opens and takes ownership of ticket]
+    F["Agent views<br>support queue"] --> G["Agent opens and takes<br>ownership of ticket"]
+    E --> F
     G --> H[Agent investigates issue]
     H --> I{Can agent resolve it?}
 
@@ -23,11 +23,11 @@ flowchart TD
     K -- Yes --> L[Agent resolves ticket]
 
     I -- No --> M[Agent escalates ticket]
-    M --> N[Ticket reassigned to qualified agent]
+    M --> N["Ticket reassigned to<br>qualified agent"]
     N --> O[New agent reviews ticket]
-    O --> P[New agent investigates and works with customer]
+    O --> P["New agent investigates<br>and works with customer"]
     P --> Q{Issue resolved?}
-    Q -- No --> R{Requires further escalation?}
+    Q -- No --> R{Requires further<br>escalation?}
     R -- Yes --> M
     R -- No --> P
     Q -- Yes --> L
