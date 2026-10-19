@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Helpdesk.Domain\Helpdesk.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
 </Project>
