@@ -15,6 +15,6 @@ A customer creates a ticket specifying the issue -> an agent takes ownership of 
 
 ## Proposed Technology Stack
 - HTML, CSS, TypeScript, and React for the frontend
-- ASP.NET Core Web API for the backend
+- ASP.NET Core Web API and C# for the backend
 - EF Core, and PostgreSQL or SQL Server for the database
 - Automated tests and Git-based version control to ensure all work is backed up and working. 

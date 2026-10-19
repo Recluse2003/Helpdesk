@@ -1,1 +1,8 @@
-<Solution />
+<Solution>
+  <Project Path="Helpdesk.Api/Helpdesk.Api.csproj" Id="d3eeec14-211f-4f74-bef0-0cc96893b3f8" />
+  <Project Path="Helpdesk.Application/Helpdesk.Application.csproj" Id="f61223ff-5763-46b0-a0f0-a77bc8c2253d" />
+  <Project Path="Helpdesk.Domain/Helpdesk.Domain.csproj" Id="8ba0515f-98b1-419a-b455-22f34b8af102" />
+  <Project Path="Helpdesk.Infrastructure/Helpdesk.Infrastructure.csproj" Id="f1bbfb6b-508d-4a30-b52a-064b1de12891" />
+  <Project Path="Helpdesk.Tests.Integration/Helpdesk.Tests.Integration.csproj" Id="50f553aa-b5b8-4278-8fd9-d652c67c3137" />
+  <Project Path="Helpdesk.Tests.Unit/Helpdesk.Tests.Unit.csproj" Id="2f25fe9b-05b2-421d-bed1-8309b5cbfd42" />
+</Solution>
