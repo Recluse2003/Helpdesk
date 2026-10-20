@@ -8,7 +8,7 @@ namespace Helpdesk.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<EscalationRequest> builder)
         {
-            throw new NotImplementedException();
+
         }
     }
 }
