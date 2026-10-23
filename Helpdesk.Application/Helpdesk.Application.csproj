@@ -17,13 +17,10 @@
     <Folder Include="Escalations\AcceptEscalation\" />
     <Folder Include="Escalations\RejectEscalation\" />
     <Folder Include="Escalations\RequestEscalation\" />
-    <Folder Include="Tickets\CreateTicket\" />
-    <Folder Include="Tickets\GetMyTickets\" />
-    <Folder Include="Tickets\AssignTicket\" />
-    <Folder Include="Tickets\ChangeTicketStatus\" />
-    <Folder Include="Tickets\AddTicketMessage\" />
-    <Folder Include="Tickets\GetTicketDetails\" />
-    <Folder Include="Tickets\GetSupportQueueQuery\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="14.2.0" />
   </ItemGroup>
 
 </Project>
