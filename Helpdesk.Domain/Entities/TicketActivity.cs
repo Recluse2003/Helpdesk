@@ -1,10 +1,12 @@
-﻿namespace Helpdesk.Domain.Entities
+﻿using Helpdesk.Domain.Enums;
+
+namespace Helpdesk.Domain.Entities
 {
     public class TicketActivity
     {
         public Guid Id { get; private set; }
 
-        public string EventType { get; private set; } = string.Empty;
+        public TicketActivityType EventType { get; private set; }
 
         public bool IsPublic { get; private set; }
 
@@ -12,11 +14,11 @@
 
         public Guid TicketId { get; private set; }
 
-        public Guid ActorUserId { get; private set; }
+        public Guid? ActorUserId { get; private set; }
 
         public DateTime CreatedAt { get; private set; }
 
-        public TicketActivity(Guid id, string eventType, bool isPublic, string? details, Guid ticketId, Guid actorUserId)
+        public TicketActivity(Guid id, TicketActivityType eventType, bool isPublic, string? details, Guid ticketId, Guid actorUserId)
         {
             Id = id;
             EventType = eventType;

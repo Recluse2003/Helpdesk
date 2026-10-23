@@ -29,9 +29,6 @@ namespace Helpdesk.Infrastructure.Persistence.Configurations
                 .HasMaxLength(20)
                 .IsRequired();
 
-            builder.Property(t => t.CreatedById)
-                .IsRequired();
-
             builder.Property(t => t.CreatedAt)
                 .IsRequired();
 
@@ -41,6 +38,7 @@ namespace Helpdesk.Infrastructure.Persistence.Configurations
             builder.HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(t => t.CreatedById)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne<ApplicationUser>()
