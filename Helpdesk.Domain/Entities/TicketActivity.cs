@@ -20,6 +20,15 @@ namespace Helpdesk.Domain.Entities
 
         public TicketActivity(Guid id, TicketActivityType eventType, bool isPublic, string? details, Guid ticketId, Guid actorUserId)
         {
+            if (details != null && details.Length > 1000)
+                throw new ArgumentException("A ticket activity's details cannot exceed 1000 characters.", nameof(details));
+
+            if (ticketId != Guid.Empty)
+                throw new ArgumentException("A ticket must be specified.", nameof(ticketId));
+
+            if (actorUserId != Guid.Empty)
+                throw new ArgumentException("A ticket activity acting user must be specified.", nameof(ticketId));
+
             Id = id;
             EventType = eventType;
             IsPublic = isPublic;
