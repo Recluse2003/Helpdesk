@@ -17,6 +17,7 @@ namespace Helpdesk.Domain.Entities
         public Guid ProposedRecipientUserId { get; private set; }
 
         public Guid? RespondedByUserId { get; private set; }
+
         public EscalationRequestStatus Status { get; private set; }
 
         public DateTime CreatedAt { get; private set; }

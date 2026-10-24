@@ -11,12 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Administrator\GetUsers\" />
-    <Folder Include="Administrator\GetTickets\" />
     <Folder Include="Common\Interfaces\" />
-    <Folder Include="Escalations\AcceptEscalation\" />
-    <Folder Include="Escalations\RejectEscalation\" />
-    <Folder Include="Escalations\RequestEscalation\" />
   </ItemGroup>
 
   <ItemGroup>
