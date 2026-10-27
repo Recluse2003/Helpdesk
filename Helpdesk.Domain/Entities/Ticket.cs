@@ -1,4 +1,5 @@
 ﻿using Helpdesk.Domain.Enums;
+using Helpdesk.Domain.Exceptions;
 
 namespace Helpdesk.Domain.Entities
 {
@@ -25,19 +26,19 @@ namespace Helpdesk.Domain.Entities
         public Ticket(string title, string description, Guid createdById, TicketPriority priority = TicketPriority.Medium)
         {
             if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Ticket title is required.", nameof(title));
+                throw new DomainException("Ticket title is required.");
 
             if (title.Length > 200)
-                throw new ArgumentException("Ticket title cannot exceed 200 characters.", nameof(title));
+                throw new DomainException("Ticket title cannot exceed 200 characters.");
 
             if (string.IsNullOrWhiteSpace(description))
-                throw new ArgumentException("Ticket description is required.", nameof(description));
+                throw new DomainException("Ticket description is required.");
 
             if (description.Length > 5000)
-                throw new ArgumentException("Ticket description cannot exceed 5000 characters.", nameof(description));
+                throw new DomainException("Ticket description cannot exceed 5000 characters.");
 
             if (createdById == Guid.Empty)
-                throw new ArgumentException("A creator must be specified.", nameof(createdById));
+                throw new DomainException("A ticket must specify a creator.");
 
             Id = Guid.NewGuid();
             Title = title.Trim();
@@ -52,7 +53,7 @@ namespace Helpdesk.Domain.Entities
         public void AssignTo(Guid agentId)
         {
             if (agentId == Guid.Empty)
-                throw new ArgumentException("A valid agent ID must be specified.", nameof(agentId));
+                throw new ArgumentException("A valid user ID must be specified.", nameof(agentId));
 
             AssignedToId = agentId;
             UpdatedAt = DateTime.UtcNow;

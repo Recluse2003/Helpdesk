@@ -1,7 +1,12 @@
+using Helpdesk.Api;
+using Helpdesk.Application;
+using Helpdesk.Application.Common.Interfaces;
 using Helpdesk.Infrastructure.Persistence;
 using Helpdesk.Infrastructure.Persistence.Models;
+using Helpdesk.Infrastructure.Persistence.Repositories;
 using Helpdesk.Infrastructure.Persistence.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+builder.Services.AddApplication();
 
 builder.Services.AddDbContext<HelpdeskDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Helpdesk"))
@@ -21,8 +28,22 @@ builder.Services
     .AddEntityFrameworkStores<HelpdeskDbContext>()
     .AddSignInManager();
 
-builder.Services.AddAuthentication(
-    IdentityConstants.ApplicationScheme);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["Authentication:Authority"];
+        options.Audience = builder.Configuration["Authentication:Audience"];
+
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
 var app = builder.Build();
 
@@ -49,6 +70,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
