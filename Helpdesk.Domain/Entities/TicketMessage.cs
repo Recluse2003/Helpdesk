@@ -14,7 +14,7 @@
 
         public DateTime CreatedAt { get; private set; }
 
-        public TicketMessage(Guid id, string content, bool isPublic, Guid ticketId, Guid authorUserId)
+        public TicketMessage(Guid ticketId, string content, Guid authorUserId, bool isPublic = true)
         {
             if (string.IsNullOrWhiteSpace(content))
                 throw new ArgumentException("A ticket message must contain something.", nameof(content));
@@ -28,7 +28,7 @@
             if (authorUserId != Guid.Empty)
                 throw new ArgumentException("The message's author must be specified.", nameof(ticketId));
 
-            Id = id;
+            Id = Guid.NewGuid();
             Content = content;
             IsPublic = isPublic;
             TicketId = ticketId;

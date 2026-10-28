@@ -23,6 +23,10 @@ namespace Helpdesk.Domain.Entities
 
         public DateTime UpdatedAt { get; private set; }
 
+        public List<TicketMessage> Messages { get; private set; } = new();
+        
+        public List<TicketActivity> Activities { get; private set; } = new();
+
         public Ticket(string title, string description, Guid createdById, TicketPriority priority = TicketPriority.Medium)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -48,12 +52,15 @@ namespace Helpdesk.Domain.Entities
             Status = TicketStatus.Open;
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = CreatedAt;
+
+            var activity = new TicketActivity(Id, TicketActivityType.Created, createdById);
+            Activities.Add(activity);
         }
 
         public void AssignTo(Guid agentId)
         {
             if (agentId == Guid.Empty)
-                throw new ArgumentException("A valid user ID must be specified.", nameof(agentId));
+                throw new DomainException("A valid user ID must be specified to assign the ticket.");
 
             AssignedToId = agentId;
             UpdatedAt = DateTime.UtcNow;
@@ -74,16 +81,50 @@ namespace Helpdesk.Domain.Entities
         public void StartProgress()
         {
             if (Status != TicketStatus.Open)
-                throw new InvalidOperationException("Only open tickets can be moved into progress.");
+                throw new DomainException("Only open tickets can be moved into progress.");
 
             Status = TicketStatus.InProgress;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void AddPublicMessage(string content, Guid authorId)
+        {
+            if (authorId == Guid.Empty)
+                throw new DomainException("A valid user ID must be specified to add a public message");
+
+            if (authorId != CreatedById && authorId != AssignedToId)
+                throw new DomainException("A public message can not be added, unless the user is the author of the ticket, or the assigned support agent.");
+
+            var message = new TicketMessage(Id, content, authorId);
+            Messages.Add(message);
+
+            var activity = new TicketActivity(Id, TicketActivityType.MessageAdded, authorId);
+            Activities.Add(activity);
+
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void AddInternalNote(string content, Guid authorId)
+        {
+            if (authorId == Guid.Empty)
+                throw new DomainException("A valid user ID must be specified to add a public message");
+
+            if (authorId != AssignedToId)
+                throw new DomainException("A internal note can not be added to a ticket, unless they are the assigned support agent.");
+
+            var message = new TicketMessage(Id, content, authorId, isPublic: false);
+            Messages.Add(message);
+
+            var activity = new TicketActivity(Id, TicketActivityType.MessageAdded, authorId);
+            Activities.Add(activity);
+
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void Resolve()
         {
             if (Status is not TicketStatus.Open and not TicketStatus.InProgress)
-                throw new InvalidOperationException("Only open or in-progress tickets can be resolved.");
+                throw new DomainException("Only open or in-progress tickets can be resolved.");
 
             Status = TicketStatus.Resolved;
             UpdatedAt = DateTime.UtcNow;
@@ -92,7 +133,7 @@ namespace Helpdesk.Domain.Entities
         public void Close()
         {
             if (Status != TicketStatus.Resolved)
-                throw new InvalidOperationException("Only resolved tickets can be closed.");
+                throw new DomainException("Only resolved tickets can be closed.");
 
             Status = TicketStatus.Closed;
             UpdatedAt = DateTime.UtcNow;
@@ -101,7 +142,7 @@ namespace Helpdesk.Domain.Entities
         public void Reopen()
         {
             if (Status is not TicketStatus.Resolved and not TicketStatus.Closed)
-                throw new InvalidOperationException("Only resolved or closed tickets can be reopened.");
+                throw new DomainException("Only resolved or closed tickets can be reopened.");
 
             Status = TicketStatus.Open;
             UpdatedAt = DateTime.UtcNow;

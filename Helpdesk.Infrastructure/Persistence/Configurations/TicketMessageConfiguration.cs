@@ -22,10 +22,10 @@ namespace Helpdesk.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.HasOne<Ticket>()
-                .WithMany()
+                .WithMany(t => t.Messages)
                 .HasForeignKey(tm => tm.TicketId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne<ApplicationUser>()
                 .WithMany()

@@ -18,7 +18,7 @@ namespace Helpdesk.Domain.Entities
 
         public DateTime CreatedAt { get; private set; }
 
-        public TicketActivity(Guid id, TicketActivityType eventType, bool isPublic, string? details, Guid ticketId, Guid actorUserId)
+        public TicketActivity(Guid ticketId, TicketActivityType eventType, Guid actorUserId, string? details = null, bool isPublic = true)
         {
             if (details != null && details.Length > 1000)
                 throw new ArgumentException("A ticket activity's details cannot exceed 1000 characters.", nameof(details));
@@ -29,7 +29,7 @@ namespace Helpdesk.Domain.Entities
             if (actorUserId != Guid.Empty)
                 throw new ArgumentException("A ticket activity acting user must be specified.", nameof(ticketId));
 
-            Id = id;
+            Id = Guid.NewGuid();
             EventType = eventType;
             IsPublic = isPublic;
             Details = details;

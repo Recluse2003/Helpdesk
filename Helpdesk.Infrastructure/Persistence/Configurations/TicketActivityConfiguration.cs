@@ -23,9 +23,10 @@ namespace Helpdesk.Infrastructure.Persistence.Configurations
                 .HasMaxLength(1000);
 
             builder.HasOne<Ticket>()
-                .WithMany()
+                .WithMany(t => t.Activities)
                 .HasForeignKey(ta => ta.TicketId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne<ApplicationUser>()
                 .WithMany()

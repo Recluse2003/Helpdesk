@@ -18,5 +18,5 @@ namespace Helpdesk.Application.Tickets.GetTicketDetails
     /// A <see cref="Result"/> containing a <see cref="TicketDetailsDto"/> which contains all related data to the
     /// <see cref="Ticket"/>on success, or an <see cref="Error"/> describing why the operation failed.
     /// </returns>
-    public record GetTicketDetailsCommand(Guid UserId, Guid TicketId) : IRequest<Result<TicketDetailsDto>>;
+    public record GetTicketDetailsQuery(Guid UserId, Guid TicketId) : IRequest<Result<TicketDetailsDto>>;
 }
