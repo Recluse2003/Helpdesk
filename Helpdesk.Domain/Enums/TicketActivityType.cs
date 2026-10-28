@@ -7,7 +7,6 @@
         Unassigned,
         StatusChanged,
         PriorityChanged,
-        MessageAdded,
         EscalationRequested,
         EscalationAccepted,
         EscalationRejected

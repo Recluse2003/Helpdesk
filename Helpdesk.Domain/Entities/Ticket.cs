@@ -72,8 +72,11 @@ namespace Helpdesk.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void ChangePriority(TicketPriority priority)
+        public void ChangePriority(TicketPriority priority, Guid agentId)
         {
+            var activity = new TicketActivity(Id, TicketActivityType.PriorityChanged, agentId, $"Agent has reassigned ticket priority from {Priority} to {priority}.");
+            Activities.Add(activity);
+
             Priority = priority;
             UpdatedAt = DateTime.UtcNow;
         }
@@ -98,9 +101,6 @@ namespace Helpdesk.Domain.Entities
             var message = new TicketMessage(Id, content, authorId);
             Messages.Add(message);
 
-            var activity = new TicketActivity(Id, TicketActivityType.MessageAdded, authorId);
-            Activities.Add(activity);
-
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -114,9 +114,6 @@ namespace Helpdesk.Domain.Entities
 
             var message = new TicketMessage(Id, content, authorId, isPublic: false);
             Messages.Add(message);
-
-            var activity = new TicketActivity(Id, TicketActivityType.MessageAdded, authorId);
-            Activities.Add(activity);
 
             UpdatedAt = DateTime.UtcNow;
         }
