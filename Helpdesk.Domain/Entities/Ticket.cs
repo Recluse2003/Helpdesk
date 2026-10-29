@@ -23,9 +23,11 @@ namespace Helpdesk.Domain.Entities
 
         public DateTime UpdatedAt { get; private set; }
 
-        public List<TicketMessage> Messages { get; private set; } = new();
-        
-        public List<TicketActivity> Activities { get; private set; } = new();
+        private readonly List<TicketMessage> _messages = [];
+        private readonly List<TicketActivity> _activities = [];
+
+        public IReadOnlyCollection<TicketMessage> Messages => _messages.AsReadOnly();
+        public IReadOnlyCollection<TicketActivity> Activities => _activities.AsReadOnly();
 
         public Ticket(string title, string description, Guid createdById, TicketPriority priority = TicketPriority.Medium)
         {
@@ -54,7 +56,17 @@ namespace Helpdesk.Domain.Entities
             UpdatedAt = CreatedAt;
 
             var activity = new TicketActivity(Id, TicketActivityType.Created, createdById);
-            Activities.Add(activity);
+            AddActivity(activity);
+        }
+
+        private void AddMessage(TicketMessage message)
+        {
+            _messages.Add(message);
+        }
+
+        private void AddActivity(TicketActivity activity)
+        {
+            _activities.Add(activity);
         }
 
         public void AssignTo(Guid agentId)
@@ -75,7 +87,7 @@ namespace Helpdesk.Domain.Entities
         public void ChangePriority(TicketPriority priority, Guid agentId)
         {
             var activity = new TicketActivity(Id, TicketActivityType.PriorityChanged, agentId, $"Agent has reassigned ticket priority from {Priority} to {priority}.");
-            Activities.Add(activity);
+            AddActivity(activity);
 
             Priority = priority;
             UpdatedAt = DateTime.UtcNow;
@@ -99,7 +111,7 @@ namespace Helpdesk.Domain.Entities
                 throw new DomainException("A public message can not be added, unless the user is the author of the ticket, or the assigned support agent.");
 
             var message = new TicketMessage(Id, content, authorId);
-            Messages.Add(message);
+            AddMessage(message);
 
             UpdatedAt = DateTime.UtcNow;
         }
@@ -113,7 +125,7 @@ namespace Helpdesk.Domain.Entities
                 throw new DomainException("A internal note can not be added to a ticket, unless they are the assigned support agent.");
 
             var message = new TicketMessage(Id, content, authorId, isPublic: false);
-            Messages.Add(message);
+            AddMessage(message);
 
             UpdatedAt = DateTime.UtcNow;
         }

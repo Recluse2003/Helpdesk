@@ -17,7 +17,19 @@ namespace Helpdesk.Infrastructure.Persistence.Repositories
 
         public async Task AddAsync(Ticket ticket, CancellationToken cancellationToken)
         {
-            await _context.AddAsync(ticket, cancellationToken);
+            await _context.Tickets.AddAsync(ticket, cancellationToken);
+        }
+
+        public async Task<Ticket?> GetByIdAsync(Guid ticketId, CancellationToken cancellationToken)
+        {
+            return await _context.Tickets
+                .Where(t => t.Id == ticketId)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public void Update(Ticket ticket)
+        {
+            _context.Tickets.Update(ticket);
         }
 
         public async Task<PagedList<TicketSummaryDto>> GetTicketsByUserId(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)

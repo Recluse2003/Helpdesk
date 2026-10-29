@@ -6,8 +6,7 @@ using MediatR;
 namespace Helpdesk.Application.Features.Tickets.CreateTicket
 {
     /// <summary>
-    /// Handles the execution of a player's <see cref="CreateTicketCommand"/> request.
-    /// Validates the user exists, 
+    /// Handles the execution of a customer's <see cref="CreateTicketCommand"/> request.
     /// </summary>
     public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, Result<Guid>>
     {

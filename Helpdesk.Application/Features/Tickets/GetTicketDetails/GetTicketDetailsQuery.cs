@@ -1,9 +1,6 @@
 ﻿using Helpdesk.Application.Common.Results;
 using Helpdesk.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Helpdesk.Application.Features.Tickets.GetTicketDetails
 {
