@@ -8,6 +8,9 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         TicketStatus Status,
         TicketPriority Priority,
         DateTime CreatedAt,
+        DateTime UpdatedAt,
+        Guid CreatedById,
+        string CreatedByDisplayName,
         Guid? AssignedToId,
-        string? AssigneeName);
+        string? AssigneeDisplayName);
 }

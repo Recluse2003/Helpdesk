@@ -17,14 +17,14 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
             _context = context;
         }
 
-        public async Task<Result<PagedList<TicketSummaryDto>>> Handle(GetTicketsByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PagedList<TicketSummaryDto>>> Handle(GetTicketsByUserIdQuery query, CancellationToken cancellationToken)
         {
-            int pageNumber = request.PageNumber < 1 ? 1 : request.PageNumber;
-            int pageSize = request.PageSize < 1 ? 10 : request.PageSize;
+            int pageNumber = query.PageNumber < 1 ? 1 : query.PageNumber;
+            int pageSize = query.PageSize < 1 ? 10 : query.PageSize;
 
             var baseQuery = _context.Tickets
                 .AsNoTracking()
-                .Where(t => t.CreatedById == request.UserId);
+                .Where(t => t.CreatedById == query.UserId);
 
             int total = await baseQuery.CountAsync(cancellationToken);
 
@@ -44,7 +44,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
                         x.ticket.Priority,
                         x.ticket.CreatedAt,
                         x.ticket.UpdatedAt,
-                        user != null ? user.UserName : null
+                        user != null ? user.DisplayName : null
                     )
                 )
                 .OrderByDescending(dto => dto.UpdatedAt)
