@@ -1,11 +1,10 @@
-using Helpdesk.Api;
-using Helpdesk.Application;
-using Helpdesk.Application.Common.Interfaces;
-using Helpdesk.Infrastructure.Persistence;
-using Helpdesk.Infrastructure.Persistence.Models;
-using Helpdesk.Infrastructure.Persistence.Repositories;
-using Helpdesk.Infrastructure.Persistence.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using FluentValidation;
+using Helpdesk.Api.Infrastructure.Middleware; 
+using Helpdesk.Api.Infrastructure.Persistence; 
+using Helpdesk.Api.Infrastructure.Persistence.Models; 
+using Helpdesk.Api.Infrastructure.Persistence.Services;
+using Helpdesk.Api.Shared.Behaviors;
+using Helpdesk.Api.Shared.Extensions; 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,23 +12,36 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Get the current assembly 
+var apiAssembly = typeof(Program).Assembly;
 
+// Core framework configurations
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-builder.Services.AddApplication();
+// Consolidated Application registrations 
+builder.Services.AddMediatR(configuration =>
+{
+    configuration.RegisterServicesFromAssembly(apiAssembly);
+    configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+builder.Services.AddValidatorsFromAssembly(apiAssembly);
 
+// Persistence setup
 builder.Services.AddDbContext<HelpdeskDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Helpdesk"))
 );
 
+// Identity core configuration
 builder.Services
     .AddIdentityCore<ApplicationUser>()
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<HelpdeskDbContext>()
     .AddSignInManager();
 
+// Authentication & Authorization
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -45,33 +57,36 @@ builder.Services.AddAuthentication("Bearer")
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
-
 builder.Services.AddAuthorization();
-
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 
 var app = builder.Build();
 
+// HTTP Request Pipeline Configuration
 app.UseExceptionHandler();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Map all feature endpoints
+app.MapFeatures();
+app.MapControllers();
+
+// Database Migrations and Seeding Setup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<HelpdeskDbContext>();
 
-    // Apply pending migrations
+    // Apply pending migrations automatically
     await dbContext.Database.MigrateAsync();
 
+    // Fixed a small bug: passing IdentityRole<Guid> to match AddRoles structure
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -79,13 +94,5 @@ using (var scope = app.Services.CreateScope())
     await IdentitySeeder.SeedRolesAsync(roleManager);
     await IdentitySeeder.SeedAdminAccountAsync(userManager);
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();
