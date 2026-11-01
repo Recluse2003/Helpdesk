@@ -69,13 +69,25 @@ namespace Helpdesk.Api.Domain.Entities
             _activities.Add(activity);
         }
 
-        public void AssignTo(Guid agentId)
+        public void Claim(Guid agentId, string agentDisplayName)
         {
             if (agentId == Guid.Empty)
                 throw new DomainException("A valid user ID must be specified to assign the ticket.");
 
+            if (string.IsNullOrWhiteSpace(agentDisplayName))
+                throw new DomainException("A valid display name must be specified.");
+
+            if (AssignedToId != null)
+                throw new DomainException("This ticket has already been assigned.");
+
             AssignedToId = agentId;
             UpdatedAt = DateTime.UtcNow;
+
+            AddActivity(new TicketActivity(
+                Id,
+                TicketActivityType.Assigned,
+                agentId,
+                $"Ticket claimed by {agentDisplayName}."));
         }
 
         public void Unassign()
@@ -86,11 +98,19 @@ namespace Helpdesk.Api.Domain.Entities
 
         public void ChangePriority(TicketPriority priority, Guid agentId)
         {
-            var activity = new TicketActivity(Id, TicketActivityType.PriorityChanged, agentId, $"Agent has reassigned ticket priority from {Priority} to {priority}.");
-            AddActivity(activity);
+            if (Priority == priority)
+                return;
+
+            var previousPriority = Priority;
 
             Priority = priority;
             UpdatedAt = DateTime.UtcNow;
+
+            AddActivity(new TicketActivity(
+                Id,
+                TicketActivityType.PriorityChanged,
+                agentId,
+                $"Ticket priority changed from {previousPriority} to {priority}."));
         }
 
         public void StartProgress()

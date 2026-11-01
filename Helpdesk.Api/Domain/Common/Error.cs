@@ -6,7 +6,8 @@
         Validation = 1,
         NotFound = 2,
         Conflict = 3,
-        Unauthorized = 4
+        Unauthorized = 4,
+        Forbidden = 5
     }
 
     public record Error(string Id, ErrorType Type, string Description)
@@ -25,5 +26,8 @@
 
         public static Error Unauthorized(string id, string description)
             => new(id, ErrorType.Unauthorized, description);
+
+        public static Error Forbidden(string id, string description)
+            => new(id, ErrorType.Forbidden, description);
     }
 }

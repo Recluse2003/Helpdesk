@@ -21,7 +21,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
                     return Results.Unauthorized();
 
                 var query = new GetTicketsByUserIdQuery(userId, pageNumber, pageSize);
-git 
+
                 var result = await mediator.Send(query, cancellationToken);
 
                 return result.IsSuccess
