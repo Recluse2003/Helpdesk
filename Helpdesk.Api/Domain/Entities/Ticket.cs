@@ -90,6 +90,37 @@ namespace Helpdesk.Api.Domain.Entities
                 $"Ticket claimed by {agentDisplayName}."));
         }
 
+        public void AssignTo(Guid assignerId, string assignerDisplayName, Guid assigneeId, string assigneeDisplayName, string? oldAssigneeDisplayName)
+        {
+            if (AssignedToId == assigneeId)
+                return;
+
+            if (assignerId == Guid.Empty)
+                throw new DomainException("A valid user ID must be specified to assign the ticket.");
+
+            if (string.IsNullOrWhiteSpace(assignerDisplayName))
+                throw new DomainException("A valid assigner display name must be specified.");
+
+            if (assigneeId == Guid.Empty)
+                throw new DomainException("A valid user ID must be specified to assign the ticket to.");
+
+            if (string.IsNullOrWhiteSpace(assigneeDisplayName))
+                throw new DomainException("A valid assignee display name must be specified.");
+
+            string details = AssignedToId == null ?
+                $"{assignerDisplayName} assigned the ticket to {assigneeDisplayName}." :
+                $"{assignerDisplayName} reassigned the ticket from {oldAssigneeDisplayName} to {assigneeDisplayName}.";
+
+            AssignedToId = assigneeId;
+            UpdatedAt = DateTime.UtcNow;
+
+            AddActivity(new TicketActivity(
+                    Id,
+                    TicketActivityType.Assigned,
+                    assignerId,
+                    details));
+        }
+
         public void Unassign()
         {
             AssignedToId = null;

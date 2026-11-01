@@ -25,7 +25,7 @@ namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
             if (user == null)
                 return Error.NotFound("User.NotFound", "User not found.");
 
-            // Determines if the user's permissions.
+            // Determines the user's permissions.
             bool isSupportAgent = await _userManager.IsInRoleAsync(user, "SupportAgent");
 
             bool isAdministrator = await _userManager.IsInRoleAsync(user, "Administrator");
