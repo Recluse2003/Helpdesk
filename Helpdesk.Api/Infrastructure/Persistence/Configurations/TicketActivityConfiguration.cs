@@ -11,7 +11,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(ta => ta.Id);
 
-            builder.Property(ta => ta.EventType)
+            builder.Property(ta => ta.ActivityType)
                 .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();

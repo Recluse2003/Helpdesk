@@ -6,7 +6,7 @@ namespace Helpdesk.Api.Domain.Entities
     {
         public Guid Id { get; private set; }
 
-        public TicketActivityType EventType { get; private set; }
+        public TicketActivityType ActivityType { get; private set; }
 
         public bool IsPublic { get; private set; }
 
@@ -30,7 +30,7 @@ namespace Helpdesk.Api.Domain.Entities
                 throw new ArgumentException("A ticket activity acting user must be specified.", nameof(ticketId));
 
             Id = Guid.NewGuid();
-            EventType = eventType;
+            ActivityType = eventType;
             IsPublic = isPublic;
             Details = details;
             TicketId = ticketId;

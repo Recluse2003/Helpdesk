@@ -1,6 +1,5 @@
 ﻿using Helpdesk.Api.Domain.Common;
 using Helpdesk.Api.Infrastructure.Persistence;
-using Helpdesk.Application.Features.Tickets.GetSupportQueue;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,6 @@
-﻿namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
+﻿using Helpdesk.Api.Domain.Enums;
+
+namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
 {
     public record TicketTimelineItemDto(
         Guid Id,
@@ -6,5 +8,6 @@
         string ActorName,
         DateTime CreatedAt,
         string? Content,
-        string? Details);
+        string? Details,
+        TicketActivityType? ActivityType);
 }
