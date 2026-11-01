@@ -25,9 +25,11 @@ namespace Helpdesk.Api.Domain.Entities
 
         private readonly List<TicketMessage> _messages = [];
         private readonly List<TicketActivity> _activities = [];
+        private readonly List<EscalationRequest> _escalationRequests = [];
 
         public IReadOnlyCollection<TicketMessage> Messages => _messages.AsReadOnly();
         public IReadOnlyCollection<TicketActivity> Activities => _activities.AsReadOnly();
+        public IReadOnlyCollection<EscalationRequest> EscalationRequests => _escalationRequests.AsReadOnly();
 
         public Ticket(string title, string description, Guid createdById, TicketPriority priority = TicketPriority.Medium)
         {
@@ -206,6 +208,27 @@ namespace Helpdesk.Api.Domain.Entities
 
             Status = TicketStatus.Open;
             UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void RequestEscalation(EscalationRequest escalationRequest, string requesterDisplayName)
+        {
+            if (Status == TicketStatus.Closed)
+                throw new DomainException("Cannot escalate a closed ticket.");
+
+            if (AssignedToId != escalationRequest.RequestedByUserId)
+                throw new DomainException("Only the assigned support agent can request an escalation.");
+
+            if (_escalationRequests.Any(e => e.Status == EscalationRequestStatus.Waiting))
+                throw new DomainException("This ticket already has a pending escalation request.");
+
+            _escalationRequests.Add(escalationRequest);
+
+            AddActivity(new TicketActivity(
+                Id,
+                TicketActivityType.EscalationRequested,
+                escalationRequest.RequestedByUserId,
+                details: $"{requesterDisplayName} requested an escalation.",
+                isPublic: false));
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
             builder.Property(er => er.RespondedAt);
 
             builder.HasOne<Ticket>()
-                .WithMany()
+                .WithMany(t => t.EscalationRequests)
                 .HasForeignKey(er => er.TicketId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
@@ -43,12 +43,16 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
             builder.HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(er => er.ProposedRecipientUserId)
-                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(er => er.RespondedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(er => er.NewSupportAgentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(er => er.TicketId);

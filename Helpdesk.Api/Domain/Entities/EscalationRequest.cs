@@ -14,9 +14,11 @@ namespace Helpdesk.Api.Domain.Entities
 
         public Guid RequestedByUserId { get; private set; }
 
-        public Guid ProposedRecipientUserId { get; private set; }
+        public Guid? ProposedRecipientUserId { get; private set; }
 
         public Guid? RespondedByUserId { get; private set; }
+
+        public Guid? NewSupportAgentId { get; private set; }
 
         public EscalationRequestStatus Status { get; private set; }
 
@@ -38,9 +40,6 @@ namespace Helpdesk.Api.Domain.Entities
             if (requestedByUserId == Guid.Empty)
                 throw new ArgumentException("A requested by user must be specified.", nameof(requestedByUserId));
 
-            if (proposedRecipientUserId == Guid.Empty)
-                throw new ArgumentException("A proposed recipient must be specified.", nameof(proposedRecipientUserId));
-
             Id = id;
             Reason = reason;
             TicketId = ticketId;
@@ -50,10 +49,13 @@ namespace Helpdesk.Api.Domain.Entities
             CreatedAt = DateTime.UtcNow;
         }
 
-        public void Accept(Guid respondedByUserId, string? responseReason)
+        public void Accept(Guid respondedByUserId, Guid newSupportAgentId, string? responseReason)
         {
             if (respondedByUserId == Guid.Empty)
                 throw new ArgumentException("The responding user must be specified.", nameof(respondedByUserId));
+
+            if (newSupportAgentId == Guid.Empty)
+                throw new ArgumentException("The new support agent must be specified.", nameof(newSupportAgentId));
 
             if (responseReason != null && responseReason.Length > 5000)
                 throw new ArgumentException("Escalation response reason cannot exceed 5000 characters.", nameof(responseReason));
