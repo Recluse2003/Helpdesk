@@ -27,11 +27,11 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
                 return Error.NotFound("User.NotFound", "User not found.");
 
             // Determines the user's permissions.
-            bool isCustomer = await _userManager.IsInRoleAsync(user, "Customer");
+            bool isCustomer = await _userManager.IsInRoleAsync(user, RoleNames.Customer);
 
-            bool isSupportAgent = await _userManager.IsInRoleAsync(user, "SupportAgent");
+            bool isSupportAgent = await _userManager.IsInRoleAsync(user, RoleNames.SupportAgent);
 
-            bool isAdministrator = await _userManager.IsInRoleAsync(user, "Administrator");
+            bool isAdministrator = await _userManager.IsInRoleAsync(user, RoleNames.Administrator);
 
             if (!isCustomer && !isSupportAgent && !isAdministrator)
                 return Error.Unauthorized("User.Unauthorised", "You are not authorised to view tickets.");

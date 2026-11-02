@@ -23,6 +23,8 @@
 
   <ItemGroup>
     <Folder Include="Domain\ValueObjects\" />
+    <Folder Include="Features\Escalations\GetEscalations\" />
+    <Folder Include="Features\Escalations\GetEscalationDetails\" />
     <Folder Include="Infrastructure\Services\" />
   </ItemGroup>
 

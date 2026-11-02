@@ -26,9 +26,9 @@ namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
                 return Error.NotFound("User.NotFound", "User not found.");
 
             // Determines the user's permissions.
-            bool isSupportAgent = await _userManager.IsInRoleAsync(user, "SupportAgent");
+            bool isSupportAgent = await _userManager.IsInRoleAsync(user, RoleNames.SupportAgent);
 
-            bool isAdministrator = await _userManager.IsInRoleAsync(user, "Administrator");
+            bool isAdministrator = await _userManager.IsInRoleAsync(user, RoleNames.Administrator);
 
             if (!isSupportAgent && !isAdministrator)
                 return Error.Forbidden("Ticket.PriorityChangeForbidden", "You are not authorised to change ticket priority.");

@@ -210,7 +210,7 @@ namespace Helpdesk.Api.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void RequestEscalation(EscalationRequest escalationRequest, string requesterDisplayName)
+        public void RequestEscalation(EscalationRequest escalationRequest, string requesterDisplayName, string? proposedRecipientDisplayName)
         {
             if (Status == TicketStatus.Closed)
                 throw new DomainException("Cannot escalate a closed ticket.");
@@ -221,13 +221,118 @@ namespace Helpdesk.Api.Domain.Entities
             if (_escalationRequests.Any(e => e.Status == EscalationRequestStatus.Waiting))
                 throw new DomainException("This ticket already has a pending escalation request.");
 
+            if (string.IsNullOrWhiteSpace(requesterDisplayName))
+                throw new DomainException("A valid requester display name must be specified.");
+
+            if (escalationRequest.ProposedRecipientUserId.HasValue && string.IsNullOrWhiteSpace(proposedRecipientDisplayName))
+                throw new DomainException("A proposed recipient display name must be specified.");
+
             _escalationRequests.Add(escalationRequest);
+
+            string details = proposedRecipientDisplayName != null
+                ? $"{requesterDisplayName} requested an escalation to {proposedRecipientDisplayName}."
+                : $"{requesterDisplayName} requested an escalation.";
+
 
             AddActivity(new TicketActivity(
                 Id,
                 TicketActivityType.EscalationRequested,
                 escalationRequest.RequestedByUserId,
-                details: $"{requesterDisplayName} requested an escalation.",
+                details: details,
+                isPublic: false));
+        }
+
+        public void AcceptEscalation(
+            EscalationRequest escalationRequest, 
+            Guid administratorId, 
+            string administratorDisplayName,
+            Guid newSupportAgentId, 
+            string newSupportAgentDisplayName, 
+            string previousSupportAgentDisplayName, 
+            string? responseReason)
+        {
+            if (escalationRequest == null)
+                throw new DomainException("An escalation request must be specified.");
+
+            if (escalationRequest.TicketId != Id)
+                throw new DomainException("The escalation request does not belong to this ticket.");
+
+            if (escalationRequest.Status != EscalationRequestStatus.Waiting)
+                throw new DomainException("This escalation request has already been responded to.");
+
+            if (Status == TicketStatus.Closed)
+                throw new DomainException("Cannot accept an escalation for a closed ticket.");
+
+            if (AssignedToId != escalationRequest.RequestedByUserId)
+                throw new DomainException("The ticket is no longer assigned to the agent who requested escalation.");
+
+            if (administratorId == Guid.Empty)
+                throw new DomainException("The administrator must be specified.");
+
+            if (newSupportAgentId == Guid.Empty)
+                throw new DomainException("The new support agent must be specified.");
+
+            if (string.IsNullOrWhiteSpace(administratorDisplayName))
+                throw new DomainException("The administrator's display name is required.");
+
+            if (string.IsNullOrWhiteSpace(newSupportAgentDisplayName))
+                throw new DomainException("The new support agent's display name is required.");
+
+            escalationRequest.Accept(
+                administratorId,
+                newSupportAgentId,
+                responseReason);
+
+            AssignedToId = newSupportAgentId;
+            UpdatedAt = DateTime.UtcNow;
+
+            
+            AddActivity(new TicketActivity(
+                Id,
+                TicketActivityType.EscalationAccepted,
+                administratorId,
+                details: $"{administratorDisplayName} accepted the escalation request and reassigned the ticket from {previousSupportAgentDisplayName} to {newSupportAgentDisplayName}.",
+                isPublic: false));
+        }
+
+        public void RejectEscalation(
+            EscalationRequest escalationRequest,
+            Guid administratorId,
+            string administratorDisplayName,
+            string? responseReason)
+        {
+            if (escalationRequest == null)
+                throw new DomainException("An escalation request must be specified.");
+
+            if (escalationRequest.TicketId != Id)
+                throw new DomainException("The escalation request does not belong to this ticket.");
+
+            if (escalationRequest.Status != EscalationRequestStatus.Waiting)
+                throw new DomainException("This escalation request has already been responded to.");
+
+            if (Status == TicketStatus.Closed)
+                throw new DomainException("Cannot reject an escalation for a closed ticket.");
+
+            if (AssignedToId != escalationRequest.RequestedByUserId)
+                throw new DomainException("The ticket is no longer assigned to the agent who requested escalation.");
+
+            if (administratorId == Guid.Empty)
+                throw new DomainException("The administrator must be specified.");
+
+            if (string.IsNullOrWhiteSpace(administratorDisplayName))
+                throw new DomainException("The administrator's display name is required.");
+
+            escalationRequest.Reject(
+                administratorId,
+                responseReason);
+
+            UpdatedAt = DateTime.UtcNow;
+
+            AddActivity(new TicketActivity(
+                Id,
+                TicketActivityType.EscalationRejected,
+                administratorId,
+                details: $"{administratorDisplayName} rejected the escalation request.",
                 isPublic: false));
         }
     }

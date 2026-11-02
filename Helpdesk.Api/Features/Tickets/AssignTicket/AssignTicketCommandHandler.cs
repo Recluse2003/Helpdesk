@@ -26,7 +26,7 @@ namespace Helpdesk.Api.Features.Tickets.AssignTicket
                 return Error.NotFound("User.NotFound", "User not found.");
 
             // Determines if the user is an Administrator.
-            bool isAdministrator = await _userManager.IsInRoleAsync(user, "Administrator");
+            bool isAdministrator = await _userManager.IsInRoleAsync(user, RoleNames.Administrator);
 
             if (!isAdministrator)
                 return Error.Forbidden("Ticket.AssignTicketForbidden", "You are not authorised to assign a ticket to another.");
@@ -36,7 +36,7 @@ namespace Helpdesk.Api.Features.Tickets.AssignTicket
             if (assignee == null)
                 return Error.NotFound("User.NotFound", "Assignee not found.");
 
-            bool assigneeIsSupportAgent = await _userManager.IsInRoleAsync(assignee, "SupportAgent");
+            bool assigneeIsSupportAgent = await _userManager.IsInRoleAsync(assignee, RoleNames.SupportAgent);
 
             if (!assigneeIsSupportAgent)
                 return Error.Validation("Ticket.InvalidAssignee", "The selected assignee must be a support agent.");
