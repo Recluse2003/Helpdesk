@@ -71,9 +71,9 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
 
-            PagedList<QueueTicketDto> pagedList = new(tickets, pageNumber, pageSize, total);
+            PagedList<QueueTicketDto> result = new(tickets, pageNumber, pageSize, total);
 
-            return pagedList;
+            return result;
         }
     }
 }

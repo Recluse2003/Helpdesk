@@ -11,7 +11,7 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalations
     /// </summary>
     /// <param name="PageNumber">The page number of the support queue.</param>
     /// <param name="PageSize">The max number of queue tickets on the page.</param>
-    /// <param name="RequestStatus">The status to filter the <see cref="EscalationRequest"/>s by,or <see langword="null"/> 
+    /// <param name="Status">The status to filter the <see cref="EscalationRequest"/>s by,or <see langword="null"/> 
     /// to include <see cref="EscalationRequest"/> with any status. </param>
     /// <param name="TicketId">The unique identifer of the <see cref="Ticket"/> that the <see cref="EscalationRequest"/>s 
     /// are for to filter by, or <see langword="null"/> to include <see cref="EscalationRequest"/>s regardless of which 
@@ -26,7 +26,7 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalations
     public record GetEscalationsQuery(
         int PageNumber = 1, 
         int PageSize = 10, 
-        EscalationRequestStatus? RequestStatus = null, 
+        EscalationRequestStatus? Status = null, 
         Guid? TicketId = null, 
         Guid? RequestedByUserId = null
     ) : IRequest<Result<PagedList<EscalationRequestDto>>>;
