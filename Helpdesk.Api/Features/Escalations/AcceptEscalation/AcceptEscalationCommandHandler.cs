@@ -72,7 +72,7 @@ namespace Helpdesk.Api.Features.Escalations.AcceptEscalation
                 previousSupportAgent != null ? previousSupportAgent.DisplayName : "Unknown user",
                 command.ResponseReason);
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Result.Success();
         }
