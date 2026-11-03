@@ -13,7 +13,7 @@ namespace Helpdesk.Api.Domain.Entities
 
         public Guid TicketId { get; private set; }
 
-        public Ticket Ticket { get; private set; }
+        public Ticket? Ticket { get; private set; }
 
         public Guid RequestedByUserId { get; private set; }
 

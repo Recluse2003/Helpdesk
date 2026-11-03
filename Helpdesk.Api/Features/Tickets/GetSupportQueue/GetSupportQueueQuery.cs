@@ -18,6 +18,12 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
     /// A <see cref="Result"/> containing a paginated list of <see cref="QueueTicketDto"/> on success,
     /// or an <see cref="Error"/> describing why the operation failed.
     /// </returns>
-    public record GetSupportQueueQuery(int PageNumber = 1, int PageSize = 10, TicketStatus? Status = null, TicketPriority? Priority = null, Guid? CustomerId = null, Guid? AssigneeId = null) 
-        : IRequest<Result<PagedList<QueueTicketDto>>>;
+    public record GetSupportQueueQuery(
+        int PageNumber = 1, 
+        int PageSize = 10, 
+        TicketStatus? Status = null, 
+        TicketPriority? Priority = null, 
+        Guid? CustomerId = null, 
+        Guid? AssigneeId = null
+    ) : IRequest<Result<PagedList<QueueTicketDto>>>;
 }
