@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Escalations.AcceptEscalation
 {
+    /// <summary>
+    /// Defines validation rules for accepting a ticket escalation.
+    /// </summary>
     public class AcceptEscalationCommandValidator : AbstractValidator<AcceptEscalationCommand>
     {
         public AcceptEscalationCommandValidator()

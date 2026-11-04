@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
 {
+    /// <summary>
+    /// Defines validation rules for retrieving a ticket escalation request details.
+    /// </summary>
     public class GetEscalationDetailsQueryValidator : AbstractValidator<GetEscalationDetailsQuery>
     {
         public GetEscalationDetailsQueryValidator() 

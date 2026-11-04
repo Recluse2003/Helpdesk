@@ -8,6 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
 {
+    /// <summary>
+    /// Handles incoming queries for retrieving the details of a specific <see cref="EscalationRequest"/>
+    /// </summary>
+    /// <remarks>
+    /// Ensures that the requesting user is either an administrator or the user is the author of the escalation request.
+    /// Retrieves the associated ticket and relevant user information before returning an 
+    /// <see cref="EscalationRequestDetailsDto"/>.
+    /// </remarks>
     public class GetEscalationDetailsQueryHandler : IRequestHandler<GetEscalationDetailsQuery, Result<EscalationRequestDetailsDto>>
     {
         private readonly HelpdeskDbContext _context;
@@ -19,6 +27,22 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Retrieves the details of a specified escalation request.
+        /// </summary>
+        /// <param name="query">Contains the ID of the requesting user and the escalation request to retrieve.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> containing the escalation request details in the form of 
+        /// <see cref="EscalationRequestDetailsDto"/>, else returns a <see cref="Result"/> containing an <see cref="Error"/> 
+        /// stating why it failed.
+        /// </returns>
+        /// <remarks>
+        /// Access is restricted to administrators and the user who originally submitted the escalation request.
+        /// 
+        /// The returned details include the associated ticket, requester, proposed recipient, responding administrator, 
+        /// and newly assigned support agent if applicable.
+        /// </remarks>
         public async Task<Result<EscalationRequestDetailsDto>> Handle(GetEscalationDetailsQuery query, CancellationToken cancellationToken)
         {
             // Retrieve requester.

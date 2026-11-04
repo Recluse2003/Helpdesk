@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Escalations.RejectEscalation
 {
+    /// <summary>
+    /// Defines validation rules for rejecting a ticket escalation request.
+    /// </summary>
     public class RejectEscalationCommandValidator : AbstractValidator<RejectEscalationCommand>
     {
         public RejectEscalationCommandValidator() 

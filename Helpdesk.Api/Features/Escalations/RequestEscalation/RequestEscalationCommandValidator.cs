@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Escalations.RequestEscalation
 {
+    /// <summary>
+    /// Defines validation rules for creating a ticket escalation request.
+    /// </summary>
     public class RequestEscalationCommandValidator : AbstractValidator<RequestEscalationCommand>
     {
         public RequestEscalationCommandValidator() 
