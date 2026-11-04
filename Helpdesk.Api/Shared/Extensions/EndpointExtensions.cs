@@ -2,8 +2,16 @@
 
 namespace Helpdesk.Api.Shared.Extensions
 {
+    /// <summary>
+    /// Provides extension methods for registering application feature endpoints.
+    /// </summary>
     public static class EndpointExtensions
     {
+        /// <summary>
+        /// Finds and registers all concrete endpoint implementations in the API assembly. 
+        /// </summary>
+        /// <param name="app">The endpoint route builder used to register application endpoints.</param>
+        /// <returns>The same <see cref="IEndpointRouteBuilder"/> instance for method chaining.</returns>
         public static IEndpointRouteBuilder MapFeatures(this IEndpointRouteBuilder app)
         {
             // Scans through the main API assembly for any concrete class that implements IEndpoint

@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
 {
+    /// <summary>
+    /// Configures the Entity Framework Core database mapping for the <see cref="Ticket"/> entity.
+    /// </summary>
     public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
     {
         public void Configure(EntityTypeBuilder<Ticket> builder)
