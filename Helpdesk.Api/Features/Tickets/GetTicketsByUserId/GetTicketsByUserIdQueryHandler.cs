@@ -6,8 +6,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
 {
     /// <summary>
-    /// Handles the execution of a user's <see cref="GetTicketsByUserIdQuery"/> request.
+    /// Handles incoming queries for retrieving a paginated list of tickets created by a specified user.
     /// </summary>
+    /// <remarks>
+    /// Filters tickets by their creator, retrieves the assigned agent's display name when an agent is assigned, and 
+    /// orders the results by their last updated date. Returns the matching tickets as a paginated list.
+    /// </remarks>
     public class GetTicketsByUserIdQueryHandler : IRequestHandler<GetTicketsByUserIdQuery, Result<PagedList<TicketSummaryDto>>>
     {
         private readonly HelpdeskDbContext _context;
@@ -17,6 +21,14 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of tickets created by the specified user.
+        /// </summary>
+        /// <param name="query">Contains the user identifier and pagination criteria.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous database operations.</param>
+        /// <returns>
+        /// A <see cref="Result"/> containing a paginated list of ticket summaries created by the specified user.
+        /// </returns>
         public async Task<Result<PagedList<TicketSummaryDto>>> Handle(GetTicketsByUserIdQuery query, CancellationToken cancellationToken)
         {
             int pageNumber = query.PageNumber < 1 ? 1 : query.PageNumber;
