@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Tickets.CreateTicket
 {
+    /// <summary>
+    /// Defines validation rules for creating a ticket.
+    /// </summary>
     public class CreateTicketCommandValidator : AbstractValidator<CreateTicketCommand>
     {
         public CreateTicketCommandValidator()

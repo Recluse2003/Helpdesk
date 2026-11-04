@@ -7,6 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
 {
+    /// <summary>
+    /// Handles incoming queries for retrieving the details and timeline of a ticket.
+    /// </summary>
+    /// <remarks>
+    /// Verifies that the requesting user exists and has an authorised role. Customers can only view tickets they created 
+    /// and their public messages and activities. Support agents and administrators can view ticket details, including 
+    /// internal messages and activities. Combines messages and activities into a chronological timeline before returning 
+    /// the ticket details.
+    /// </remarks>
     public class GetTicketDetailsQueryHandler : IRequestHandler<GetTicketDetailsQuery, Result<TicketDetailsDto>>
     {
         private readonly HelpdeskDbContext _context;
@@ -18,9 +27,18 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Retrieves ticket details and its chronological timeline for an authorised user.
+        /// </summary>
+        /// <param name="request">The query containing the ticket and requesting user identifiers.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous database operations.</param>
+        /// <returns>
+        /// A <see cref="Result"/> containg the ticket details, which contains a collectiong containg a timeline if successful,
+        /// otherwise, returns a <see cref="Result"/> containing an <see cref="Error"/> explaining why the request failed. 
+        /// </returns>
         public async Task<Result<TicketDetailsDto>> Handle(GetTicketDetailsQuery request, CancellationToken cancellationToken)
         {
-            // Find the requesting user.
+            // Retrieves the requesting user, and verifies their permissions. 
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
 
             if (user == null)
@@ -130,6 +148,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
             var timeline = messages
                 .Concat(activityItems)
                 .OrderBy(item => item.CreatedAt)
+                .ThenBy(item => item.Id)
                 .ToList();
 
             // Return the ticket details.

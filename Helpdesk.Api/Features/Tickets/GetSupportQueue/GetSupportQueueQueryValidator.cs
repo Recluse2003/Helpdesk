@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
 {
+    /// <summary>
+    /// Defines validation rules for retrieving ticket summaries. 
+    /// </summary>
     public class GetSupportQueueQueryValidator : AbstractValidator<GetSupportQueueQuery>
     {
         public GetSupportQueueQueryValidator() 

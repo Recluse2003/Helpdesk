@@ -1,5 +1,6 @@
 ﻿using Helpdesk.Api.Domain.Common;
 using Helpdesk.Api.Domain.Entities;
+using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Infrastructure.Persistence;
 using Helpdesk.Api.Infrastructure.Persistence.Models;
 using MediatR;
@@ -7,6 +8,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
 {
+    /// <summary>
+    /// Handles the incoming commands to change a ticket priority. 
+    /// </summary>
+    /// <remarks>
+    /// Verifies the requesting user is either an administrator, or a support agent and is assigned to the ticket. Also 
+    /// validates that the ticket exists, and that it hasn't been closed. 
+    /// </remarks>
     public class ChangeTicketPriorityCommandHandler : IRequestHandler<ChangeTicketPriorityCommand, Result>
     {
         private readonly HelpdeskDbContext _context;
@@ -18,6 +26,15 @@ namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Processes the change ticket priority request. 
+        /// </summary>
+        /// <param name="command">Contains the ID of the requester, the ID of the ticket, and the new priority.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> if successful, else returns a <see cref="Result"/> containing an <see cref="Error"/> stating
+        /// why it failed.
+        /// </returns>
         public async Task<Result> Handle(ChangeTicketPriorityCommand command, CancellationToken cancellationToken)
         {
             ApplicationUser? user = await _userManager.FindByIdAsync(command.UserId.ToString());
@@ -40,6 +57,9 @@ namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
 
             if (!isAdministrator && ticket.AssignedToId != command.UserId)
                 return Error.Forbidden("Ticket.PriorityChangeForbidden", "You can only change the priority of tickets assigned to you.");
+
+            if (ticket.Status == TicketStatus.Closed)
+                return Error.Conflict("Ticket.AlreadyClosed", "You can only change the priority of tickets that are not closed.");
 
             ticket.ChangePriority(command.NewPriority, command.UserId);
 

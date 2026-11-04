@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
 {
+    /// <summary>
+    /// Defines validation rules for changing a ticket priority. 
+    /// </summary>
     public class ChangeTicketPriorityCommandValidator : AbstractValidator<ChangeTicketPriorityCommand>
     {
         public ChangeTicketPriorityCommandValidator() 

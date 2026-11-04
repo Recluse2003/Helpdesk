@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
 {
+    /// <summary>
+    /// Defines validation rules for retrieving tickets associated with a specified user. 
+    /// </summary>
     public class GetTicketsByUserIdQueryValidator : AbstractValidator<GetTicketsByUserIdQuery>
     {
         public GetTicketsByUserIdQueryValidator()

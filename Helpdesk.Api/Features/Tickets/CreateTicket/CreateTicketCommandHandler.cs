@@ -6,7 +6,7 @@ using MediatR;
 namespace Helpdesk.Api.Features.Tickets.CreateTicket
 {
     /// <summary>
-    /// Handles the execution of a customer's <see cref="CreateTicketCommand"/> request.
+    /// Handles incoming requests for creating tickets. 
     /// </summary>
     public class CreateTicketCommandHandler : IRequestHandler<CreateTicketCommand, Result<Guid>>
     {
@@ -17,6 +17,16 @@ namespace Helpdesk.Api.Features.Tickets.CreateTicket
             _context = context;
         }
 
+        /// <summary>
+        /// Processes a ticket creation request. 
+        /// </summary>
+        /// <param name="command">Contains the ticket title, description, the ID of the user creating the ticket, 
+        /// priority of the ticket.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> containing the ID of the newly created ticket, if successful, otherwise returns a
+        /// <see cref="Result"/> containing an <see cref="Error"/> stating why it failed.
+        /// </returns>
         public async Task<Result<Guid>> Handle(CreateTicketCommand command, CancellationToken cancellationToken)
         {
             Ticket ticket = new (

@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Tickets.ClaimTicket
 {
+    /// <summary>
+    /// Defines validation rules for claiming a ticket.
+    /// </summary>
     public class ClaimTicketCommandHandlerValidator : AbstractValidator<ClaimTicketCommand> 
     {
         public ClaimTicketCommandHandlerValidator() 

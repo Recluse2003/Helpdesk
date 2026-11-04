@@ -5,6 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
 {
+    /// <summary>
+    /// Handles incoming queries for retrieving a paginated list of tickets in the support queue.
+    /// </summary>
+    /// <remarks>
+    /// Applies the requested status, priority, customer and assignee filters. 
+    /// </remarks>
     public class GetSupportQueueQueryHandler : IRequestHandler<GetSupportQueueQuery, Result<PagedList<QueueTicketDto>>>
     {
         private readonly HelpdeskDbContext _context;
@@ -14,6 +20,15 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves a filtered and paginated list of ticket summaries for the support queue.
+        /// </summary>
+        /// <param name="query">The filtering and pagination criteria.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous database operations.</param>
+        /// <returns>
+        /// A <see cref="Result"/> containing a <see cref="PagedList{QueueTicketDto}"/> containing a collection of
+        /// <see cref="QueueTicketDto"/>.
+        /// </returns>
         public async Task<Result<PagedList<QueueTicketDto>>> Handle(GetSupportQueueQuery query, CancellationToken cancellationToken)
         {
             int pageNumber = query.PageNumber < 1 ? 1 : query.PageNumber;

@@ -2,7 +2,10 @@
 
 namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
 {
-    internal class AddTicketMessageCommandValidator : AbstractValidator<AddTicketMessageCommand>
+    /// <summary>
+    /// Defines validation rules for adding a message to a ticket. 
+    /// </summary>
+    public class AddTicketMessageCommandValidator : AbstractValidator<AddTicketMessageCommand>
     {
         public AddTicketMessageCommandValidator()
         {

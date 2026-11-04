@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Tickets.AssignTicket
 {
+    /// <summary>
+    /// Defines validation rules for assigning a ticket to an agent. 
+    /// </summary>
     public class AssignTicketCommandValidator : AbstractValidator<AssignTicketCommand>
     {
         public AssignTicketCommandValidator() 
