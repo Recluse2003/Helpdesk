@@ -3,34 +3,87 @@ using Helpdesk.Api.Domain.Exceptions;
 
 namespace Helpdesk.Api.Domain.Entities
 {
+    /// <summary>
+    /// Represents a support ticket. This class managaes its lifecycle, assignment messages, activities and escalation requests.
+    /// </summary>
     public class Ticket
     {
+        /// <summary>
+        /// Gets the unique identifier of the ticket.
+        /// </summary>
         public Guid Id { get; private set; }
 
+        /// <summary>
+        /// Gets the title of the ticket.
+        /// </summary>
         public string Title { get; private set; } = string.Empty;
 
+        /// <summary>
+        /// Gets the description of the issue reported in the ticket.
+        /// </summary>
         public string Description { get; private set; } = string.Empty;
 
+        /// <summary>
+        /// Gets the current status of the ticket.
+        /// </summary>
         public TicketStatus Status { get; private set; }
 
+        /// <summary>
+        /// Gets the priority level of the ticket.
+        /// </summary>
         public TicketPriority Priority { get; private set; }
 
+        /// <summary>
+        /// Gets the unique identifier of the user who created the ticket.
+        /// </summary>
         public Guid CreatedById { get; private set; }
 
+        /// <summary>
+        /// Gets the unique identifier of the support agent assigned to the ticket,
+        /// or null if the ticket is unassigned.
+        /// </summary>
         public Guid? AssignedToId { get; private set; }
 
+        /// <summary>
+        /// Gets the date and time the ticket was created.
+        /// </summary>
         public DateTime CreatedAt { get; private set; }
 
+        /// <summary>
+        /// Gets the date and time the ticket was last updated.
+        /// </summary>
         public DateTime UpdatedAt { get; private set; }
 
         private readonly List<TicketMessage> _messages = [];
         private readonly List<TicketActivity> _activities = [];
         private readonly List<EscalationRequest> _escalationRequests = [];
 
+        /// <summary>
+        /// Gets the messages associated with the ticket.
+        /// </summary>
         public IReadOnlyCollection<TicketMessage> Messages => _messages.AsReadOnly();
+
+        /// <summary>
+        /// Gets the activities recorded against the ticket.
+        /// </summary>
         public IReadOnlyCollection<TicketActivity> Activities => _activities.AsReadOnly();
+
+        /// <summary>
+        /// Gets the escalation requests associated with the ticket.
+        /// </summary>
         public IReadOnlyCollection<EscalationRequest> EscalationRequests => _escalationRequests.AsReadOnly();
 
+        /// <summary>
+        /// Creates a new support ticket.
+        /// </summary>
+        /// <param name="title">The title of the ticket.</param>
+        /// <param name="description">The description of the ticket.</param>
+        /// <param name="createdById">The unique identifier of the user creating the ticket.</param>
+        /// <param name="priority">The initial priority of the ticket, defined by the user. Defaults to Medium.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the title or description is invalid, the creator identifier is empty, or the supplied values exceed
+        /// their permitted lengths. 
+        /// </exception>
         public Ticket(string title, string description, Guid createdById, TicketPriority priority = TicketPriority.Medium)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -71,6 +124,17 @@ namespace Helpdesk.Api.Domain.Entities
             _activities.Add(activity);
         }
 
+        /// <summary>
+        /// Claims the ticket for the specified support agent. 
+        /// </summary>
+        /// <param name="agentId">The unique identifier of the support agent claiming the ticket.</param>
+        /// <param name="agentDisplayName">The display name of the support agent claiming the ticket.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the agent details are invalid or the ticket is already assigned.
+        /// </exception>
+        /// <remarks>
+        /// Used by a support agent to assign this ticket to themself. 
+        /// </remarks>
         public void Claim(Guid agentId, string agentDisplayName)
         {
             if (agentId == Guid.Empty)
@@ -92,7 +156,26 @@ namespace Helpdesk.Api.Domain.Entities
                 $"Ticket claimed by {agentDisplayName}."));
         }
 
-        public void AssignTo(Guid assignerId, string assignerDisplayName, Guid assigneeId, string assigneeDisplayName, string? oldAssigneeDisplayName)
+        /// <summary>
+        /// Assigns the ticket to a support agent or reassigns it from its current agent. 
+        /// </summary>
+        /// <param name="assignerId">The unique identifier of the user performing the assignment.</param>
+        /// <param name="assignerDisplayName">The display name of the user performing the assignment.</param>
+        /// <param name="assigneeId">The unique identifier of the support agent being assigned the ticket.</param>
+        /// <param name="assigneeDisplayName">The display name of the support agent being assigned the ticket.</param>
+        /// <param name="oldAssigneeDisplayName">The display name of the previously assigned agent, if applicable.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the supplied user identifiers or display names are invalid.
+        /// </exception>
+        /// <remarks>
+        /// Used by an administrator to assign the ticket to a support agent. 
+        /// </remarks>
+        public void AssignTo(
+            Guid assignerId, 
+            string assignerDisplayName,
+            Guid assigneeId, 
+            string assigneeDisplayName, 
+            string? oldAssigneeDisplayName)
         {
             if (AssignedToId == assigneeId)
                 return;
@@ -109,6 +192,8 @@ namespace Helpdesk.Api.Domain.Entities
             if (string.IsNullOrWhiteSpace(assigneeDisplayName))
                 throw new DomainException("A valid assignee display name must be specified.");
 
+            // Determines the details recorded as a ticket activity, based on if the ticket is being reassigned from a 
+            // previous support agent. 
             string details = AssignedToId == null ?
                 $"{assignerDisplayName} assigned the ticket to {assigneeDisplayName}." :
                 $"{assignerDisplayName} reassigned the ticket from {oldAssigneeDisplayName} to {assigneeDisplayName}.";
@@ -123,12 +208,20 @@ namespace Helpdesk.Api.Domain.Entities
                     details));
         }
 
+        /// <summary>
+        /// Removes the current support agent assignment from the ticket.
+        /// </summary>
         public void Unassign()
         {
             AssignedToId = null;
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Changes the priority of the ticket.
+        /// </summary>
+        /// <param name="priority">The new priority level.</param>
+        /// <param name="agentId">The unique identifier of the user making the change.</param>
         public void ChangePriority(TicketPriority priority, Guid agentId)
         {
             if (Priority == priority)
@@ -146,6 +239,12 @@ namespace Helpdesk.Api.Domain.Entities
                 $"Ticket priority changed from {previousPriority} to {priority}."));
         }
 
+        /// <summary>
+        /// Moves an open ticket into the InProgress status.
+        /// </summary>
+        /// <exception cref="DomainException">
+        /// Thrown when the ticket is not currently open.
+        /// </exception>
         public void StartProgress()
         {
             if (Status != TicketStatus.Open)
@@ -155,6 +254,15 @@ namespace Helpdesk.Api.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Adds a public message to the ticket.
+        /// </summary>
+        /// <param name="content">The content of the message.</param>
+        /// <param name="authorId">The unique identifier of the user authoring the message.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the author identifier is invalid or the author is neither the ticket creator nor its currently
+        /// assigned support agent.
+        /// </exception>
         public void AddPublicMessage(string content, Guid authorId)
         {
             if (authorId == Guid.Empty)
@@ -169,6 +277,17 @@ namespace Helpdesk.Api.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Adds an internal note to the ticket.
+        /// </summary>
+        /// <param name="content">The content of the internal note.</param>
+        /// <param name="authorId">The unique identifier of the user authoring the note.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the author identifier is invalid or the author is not the currently assigned support agent.
+        /// </exception>
+        /// <remarks>
+        /// Used by support agents and administrators to add internal notes to ticket, not visible to the customer. 
+        /// </remarks>
         public void AddInternalNote(string content, Guid authorId)
         {
             if (authorId == Guid.Empty)
@@ -183,6 +302,12 @@ namespace Helpdesk.Api.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Marks the ticket as resolved.
+        /// </summary>
+        /// <exception cref="DomainException">
+        /// Thrown when the ticket is not open or in progress.
+        /// </exception>
         public void Resolve()
         {
             if (Status is not TicketStatus.Open and not TicketStatus.InProgress)
@@ -192,6 +317,12 @@ namespace Helpdesk.Api.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Closes a resolved ticket.
+        /// </summary>
+        /// <exception cref="DomainException">
+        /// Thrown when the ticket has not been resolved.
+        /// </exception>
         public void Close()
         {
             if (Status != TicketStatus.Resolved)
@@ -201,6 +332,12 @@ namespace Helpdesk.Api.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Reopens a resolved or closed ticket, returning it to the Open status.
+        /// </summary>
+        /// <exception cref="DomainException">
+        /// Thrown when the ticket is neither resolved nor closed.
+        /// </exception>
         public void Reopen()
         {
             if (Status is not TicketStatus.Resolved and not TicketStatus.Closed)
@@ -210,7 +347,24 @@ namespace Helpdesk.Api.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void RequestEscalation(EscalationRequest escalationRequest, string requesterDisplayName, string? proposedRecipientDisplayName)
+        /// <summary>
+        /// Adds an escalation request to the ticket.
+        /// </summary>
+        /// <remarks>
+        /// Only the currently assigned support agent can request an escalation. A ticket cannot have more than one pending 
+        /// escalation request. 
+        /// </remarks>
+        /// <param name="escalationRequest">The escalation request being submitted.</param>
+        /// <param name="requesterDisplayName">The display name of the agent requesting the escalation.</param>
+        /// <param name="proposedRecipientDisplayName">The display name of the proposed recipient, if one is specified.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the ticket is closed, the requester is not the assigned agent, another escalation is pending, or the
+        /// supplied details are invalid.
+        /// </exception>
+        public void RequestEscalation(
+            EscalationRequest escalationRequest, 
+            string requesterDisplayName, 
+            string? proposedRecipientDisplayName)
         {
             if (Status == TicketStatus.Closed)
                 throw new DomainException("Cannot escalate a closed ticket.");
@@ -242,6 +396,24 @@ namespace Helpdesk.Api.Domain.Entities
                 isPublic: false));
         }
 
+        /// <summary>
+        /// Accepts an escalation request and reassigns the ticket to another support agent.
+        /// </summary>
+        /// <remarks>
+        /// The escalation request must belong to this ticket and still be pending. The ticket must remain assigned to the 
+        /// agent who requested the escalation. 
+        /// </remarks>
+        /// <param name="escalationRequest">The escalation request being accepted.</param>
+        /// <param name="administratorId">The unique identifier of the administrator accepting the request.</param>
+        /// <param name="administratorDisplayName">The display name of the administrator.</param>
+        /// <param name="newSupportAgentId">The unique identifier of the support agent receiving the ticket.</param>
+        /// <param name="newSupportAgentDisplayName">The display name of the new support agent.</param>
+        /// <param name="previousSupportAgentDisplayName">The display name of the previously assigned support agent.</param>
+        /// <param name="responseReason">An optional explanation explaining the administrator's decision.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the request is invalid, does not belong to this ticket, has already been responded to, or 
+        /// the ticket is no longer eligible for escalation.
+        /// </exception>
         public void AcceptEscalation(
             EscalationRequest escalationRequest, 
             Guid administratorId, 
@@ -295,6 +467,17 @@ namespace Helpdesk.Api.Domain.Entities
                 isPublic: false));
         }
 
+        /// <summary>
+        /// Rejects an escalation request without changing the ticket's assignment.
+        /// </summary>
+        /// <param name="escalationRequest">The escalation request being rejected.</param>
+        /// <param name="administratorId">The unique identifier of the administrator rejecting the request.</param>
+        /// <param name="administratorDisplayName">The display name of the administrator.</param>
+        /// <param name="responseReason">An optional explanation accompanying the administrator's decision.</param>
+        /// <exception cref="DomainException">
+        /// Thrown when the request is invalid, does not belong to this ticket, has already been responded to, or the 
+        /// ticket is no longer eligible for escalation.
+        /// </exception>
         public void RejectEscalation(
             EscalationRequest escalationRequest,
             Guid administratorId,
