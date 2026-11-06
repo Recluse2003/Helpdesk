@@ -34,6 +34,8 @@ builder.Services.AddDbContext<HelpdeskDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Helpdesk"))
 );
 
+
+
 // Identity core configuration
 builder.Services
     .AddIdentityCore<ApplicationUser>()
@@ -51,7 +53,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidIssuer = builder.Configuration["ApiSettings:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))

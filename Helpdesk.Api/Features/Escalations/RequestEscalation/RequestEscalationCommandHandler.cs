@@ -11,7 +11,7 @@ namespace Helpdesk.Api.Features.Escalations.RequestEscalation
     /// <summary>
     /// Handles incoming commands to create a new <see cref="EscalationRequest"/>.
     /// </summary>
-    public class RequestEscalationCommandHandler : IRequestHandler<RequestEscalationCommand, Result>
+    public class RequestEscalationCommandHandler : IRequestHandler<RequestEscalationCommand, Result<Guid>>
     {
         private readonly HelpdeskDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -28,8 +28,11 @@ namespace Helpdesk.Api.Features.Escalations.RequestEscalation
         /// <param name="command">Contains the ID of the requesting user, the reason for the escalation, ID of the ticket
         /// being escalated, and optionally the ID of a possible replacement support agent.</param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public async Task<Result> Handle(RequestEscalationCommand command, CancellationToken cancellationToken)
+        /// <returns>
+        /// A <see cref="Result"/> containing the newly created <see cref="EscalationRequest"/> unique identifier, 
+        /// otherwise returns a <see cref="Result"/> containing an <see cref="Error"/> explaining why the command failed. 
+        /// </returns>
+        public async Task<Result<Guid>> Handle(RequestEscalationCommand command, CancellationToken cancellationToken)
         {
             // Retrieves the requesting user, and verifies they exist and are a support agent.
             ApplicationUser? user = await _userManager.FindByIdAsync(command.UserId.ToString());
@@ -83,7 +86,7 @@ namespace Helpdesk.Api.Features.Escalations.RequestEscalation
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Result.Success();
+            return escalationRequest.Id;
         }
     }
 }

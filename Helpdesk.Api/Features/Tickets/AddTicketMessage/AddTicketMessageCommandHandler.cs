@@ -41,9 +41,9 @@ namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
 
             // If the message is private, delegates it to the add internal note method, else makes a public message.
             if (command.IsPublic)
-                ticket.AddPublicMessage(command.Content, command.AuthorUserId);
+                ticket.AddPublicMessage(command.Content, command.UserId);
             else
-                ticket.AddInternalNote(command.Content, command.AuthorUserId);
+                ticket.AddInternalNote(command.Content, command.UserId);
 
             await _context.SaveChangesAsync(cancellationToken);
 

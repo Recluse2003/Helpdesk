@@ -13,7 +13,7 @@ namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
                 .NotEmpty()
                 .WithMessage("A ticket must be specified.");
 
-            RuleFor(x => x.AuthorUserId)
+            RuleFor(x => x.UserId)
                 .NotEmpty()
                 .WithMessage("A ticket message author must be specified.");
 

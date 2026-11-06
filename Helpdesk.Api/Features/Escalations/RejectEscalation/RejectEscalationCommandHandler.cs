@@ -34,7 +34,7 @@ namespace Helpdesk.Api.Features.Escalations.RejectEscalation
         /// </returns>
         /// <remarks>
         /// The operation verifies that: 
-        /// <list type=">bullet">
+        /// <list type="bullet">
         /// <item>The requesting user exists and has the Administrator role.</item>
         /// <item>The escalation request exists and is waiting for a response.</item>
         /// <item>The ticket related to the escalation request exists.</item>

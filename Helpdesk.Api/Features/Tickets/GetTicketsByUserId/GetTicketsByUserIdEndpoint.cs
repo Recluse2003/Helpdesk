@@ -1,34 +1,42 @@
-﻿using Helpdesk.Api.Shared.Interfaces;
+﻿using Helpdesk.Api.Domain.Common;
+using Helpdesk.Api.Shared.Extensions;
+using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
 {
-    public class GetTicketsByUserIdEndpoint : IEndpoint
+    public sealed class GetTicketsByUserIdEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("api/users/me/tickets", async (
-                ClaimsPrincipal user,
-                int pageNumber,
-                int pageSize,
-                ISender mediator,
-                CancellationToken cancellationToken) =>
-            {
-                var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            app.MapGet("api/users/me/tickets", Handle)
+                .WithTags("Tickets")
+                .WithName("GetMyTickets")
+                .Produces<PagedList<TicketSummaryDto>>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .ProducesProblem(StatusCodes.Status401Unauthorized)
+                .RequireAuthorization();
+        }
 
-                if (!Guid.TryParse(userIdClaim, out var userId))
-                    return Results.Unauthorized();
+        private static async Task<IResult> Handle(
+            ClaimsPrincipal user,
+            GetTicketsByUserIdRequest request,
+            ISender sender,
+            CancellationToken cancellationToken)
+        {
+            var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                var query = new GetTicketsByUserIdQuery(userId, pageNumber, pageSize);
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return Results.Unauthorized();
 
-                var result = await mediator.Send(query, cancellationToken);
+            var query = new GetTicketsByUserIdQuery(userId, request.PageNumber, request.PageSize);
 
-                return result.IsSuccess
-                    ? Results.Ok(result.Value)
-                    : Results.BadRequest(result.Error);
-            })
-            .RequireAuthorization();
+            var result = await sender.Send(query, cancellationToken);
+
+            return result.ToHttpResult();
         }
     }
+
+    public record GetTicketsByUserIdRequest(int PageNumber, int PageSize);
 }

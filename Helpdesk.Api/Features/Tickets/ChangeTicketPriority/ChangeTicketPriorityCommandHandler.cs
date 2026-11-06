@@ -37,12 +37,12 @@ namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
         /// </returns>
         public async Task<Result> Handle(ChangeTicketPriorityCommand command, CancellationToken cancellationToken)
         {
+            // Retrieves the requester, and verifies they are a support agent or administrator.
             ApplicationUser? user = await _userManager.FindByIdAsync(command.UserId.ToString());
 
             if (user == null)
                 return Error.NotFound("User.NotFound", "User not found.");
 
-            // Determines the user's permissions.
             bool isSupportAgent = await _userManager.IsInRoleAsync(user, RoleNames.SupportAgent);
 
             bool isAdministrator = await _userManager.IsInRoleAsync(user, RoleNames.Administrator);
@@ -50,6 +50,8 @@ namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
             if (!isSupportAgent && !isAdministrator)
                 return Error.Forbidden("Ticket.PriorityChangeForbidden", "You are not authorised to change ticket priority.");
 
+            // Retrieves the ticket, and verifies it exists, and that the user has permissions to
+            // change its priority
             Ticket? ticket = await _context.Tickets.FindAsync(command.TicketId, cancellationToken);
 
             if (ticket == null)

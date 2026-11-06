@@ -14,8 +14,8 @@ namespace Helpdesk.Api.Features.Escalations.RequestEscalation
     /// <param name="ProposedRecipientUserId">Nullable unique identifier of the support agent who the requester recommends to take over
     /// the <see cref="Ticket"/>. If null, support agent hasn't suggested a replacement.</param>
     /// <returns>
-    /// A <see cref="Result"/> on success, or a <see cref="Result"/> containing an <see cref="Error"/> describing why the 
-    /// operation failed.
+    /// A <see cref="Result"/> containing the newly created <see cref="EscalationRequest"/> unique identifier, 
+    /// otherwise returns a <see cref="Result"/> containing an <see cref="Error"/> explaining why the command failed. 
     /// </returns>
-    public record RequestEscalationCommand(Guid UserId, string Reason, Guid TicketId, Guid? ProposedRecipientUserId) : IRequest<Result>;
+    public record RequestEscalationCommand(Guid UserId, string Reason, Guid TicketId, Guid? ProposedRecipientUserId) : IRequest<Result<Guid>>;
 }
