@@ -1,14 +1,17 @@
 using FluentValidation;
+using Helpdesk.Api.Infrastructure.Authentication;
 using Helpdesk.Api.Infrastructure.Middleware; 
 using Helpdesk.Api.Infrastructure.Persistence; 
 using Helpdesk.Api.Infrastructure.Persistence.Models; 
 using Helpdesk.Api.Infrastructure.Persistence.Services;
 using Helpdesk.Api.Shared.Behaviors;
-using Helpdesk.Api.Shared.Extensions; 
+using Helpdesk.Api.Shared.Extensions;
+using Helpdesk.Api.Shared.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,28 +41,78 @@ builder.Services.AddDbContext<HelpdeskDbContext>(options =>
 
 // Identity core configuration
 builder.Services
-    .AddIdentityCore<ApplicationUser>()
+    .AddIdentityCore<ApplicationUser>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    })
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<HelpdeskDbContext>()
-    .AddSignInManager();
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
+
+builder.Services.Configure<ApiSettings>(
+    builder.Configuration.GetSection("ApiSettings"));
+
+var apiSettings = builder.Configuration
+    .GetSection("ApiSettings")
+    .Get<ApiSettings>()
+    ?? throw new InvalidOperationException("ApiSettings configuration is missing.");
+
+if (string.IsNullOrWhiteSpace(apiSettings.Secret) ||
+    string.IsNullOrWhiteSpace(apiSettings.Issuer) ||
+    string.IsNullOrWhiteSpace(apiSettings.Audience))
+{
+    throw new InvalidOperationException("ApiSettings must contain Secret, Issuer and Audience.");
+}
+
+var key = Convert.FromBase64String(apiSettings.Secret);
+
+if (key.Length < 32)
+{
+    throw new InvalidOperationException("The JWT signing key must contain at least 32 bytes.");
+}
 
 // Authentication & Authorization
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
+            ValidIssuer = apiSettings.Issuer,
+
             ValidateAudience = true,
-            ValidateLifetime = true,
+            ValidAudience = apiSettings.Audience,
+
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["ApiSettings:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(0),
+
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.Name
         };
     });
+
 builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 
@@ -89,7 +142,7 @@ using (var scope = app.Services.CreateScope())
     await dbContext.Database.MigrateAsync();
 
     // Fixed a small bug: passing IdentityRole<Guid> to match AddRoles structure
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
     // Seed roles and admin user

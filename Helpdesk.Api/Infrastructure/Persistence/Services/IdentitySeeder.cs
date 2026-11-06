@@ -1,4 +1,5 @@
-﻿using Helpdesk.Api.Infrastructure.Persistence.Models;
+﻿using Helpdesk.Api.Domain.Common;
+using Helpdesk.Api.Infrastructure.Persistence.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Helpdesk.Api.Infrastructure.Persistence.Services
@@ -12,15 +13,15 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Services
         /// Seeds required roles (Customer, Agent, Admin).
         /// Persist them to database if they do not exist yet. 
         /// </summary>
-        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        public static async Task SeedRolesAsync(RoleManager<IdentityRole<Guid>> roleManager)
         {
-            var roles = new[] { "Customer", "SupportAgent", "Administrator" };
+            var roles = new[] { RoleNames.Customer, RoleNames.SupportAgent, RoleNames.Administrator };
 
             foreach (var role in roles) 
             { 
                 if (!await roleManager.RoleExistsAsync(role))
                 {
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                    await roleManager.CreateAsync(new IdentityRole<Guid>(role));
                 }
             }
         }
