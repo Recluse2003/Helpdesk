@@ -44,24 +44,29 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
                 .GroupJoin(
                     _context.Users,
                     ticket => ticket.AssignedToId,
-                    user => user.Id,
+                    user => (Guid?)user.Id,
                     (ticket, users) => new { ticket, users }
                 )
                 .SelectMany(
                     x => x.users.DefaultIfEmpty(),
-                    (x, user) => new TicketSummaryDto(
-                        x.ticket.Id,
-                        x.ticket.Title,
-                        x.ticket.Status,
-                        x.ticket.Priority,
-                        x.ticket.CreatedAt,
-                        x.ticket.UpdatedAt,
-                        user != null ? user.DisplayName : null
-                    )
+                    (x, user) => new
+                    {
+                        Ticket = x.ticket,
+                        AssignedToName = user != null ? user.DisplayName : null
+                    }
                 )
-                .OrderByDescending(dto => dto.UpdatedAt)
+                .OrderByDescending(x => x.Ticket.UpdatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .Select(x => new TicketSummaryDto(
+                    x.Ticket.Id,
+                    x.Ticket.Title,
+                    x.Ticket.Status,
+                    x.Ticket.Priority,
+                    x.Ticket.CreatedAt,
+                    x.Ticket.UpdatedAt,
+                    x.AssignedToName
+                ))
                 .ToListAsync(cancellationToken);
 
             PagedList<TicketSummaryDto> pagedList = new (tickets, pageNumber, pageSize, total);

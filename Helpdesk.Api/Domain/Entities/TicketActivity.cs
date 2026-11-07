@@ -16,7 +16,7 @@ namespace Helpdesk.Api.Domain.Entities
         /// <summary>
         /// Gets the type of event recorded by the activity.
         /// </summary>
-        public TicketActivityType ActivityType { get; private set; }
+        public TicketActivityType EventType { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the activity is visible to the ticket customer.
@@ -67,7 +67,7 @@ namespace Helpdesk.Api.Domain.Entities
                 throw new DomainException("A valid activity actor must be specified.");
 
             Id = Guid.NewGuid();
-            ActivityType = eventType;
+            EventType = eventType;
             IsPublic = isPublic;
             Details = details;
             TicketId = ticketId;

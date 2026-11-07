@@ -3,6 +3,7 @@ using Helpdesk.Api.Features.Tickets.CreateTicket;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Escalations.RequestEscalation
@@ -25,8 +26,8 @@ namespace Helpdesk.Api.Features.Escalations.RequestEscalation
 
         private static async Task<IResult> Handle(
             ClaimsPrincipal user,
-            RequestEscalationRequest request,
-            ISender sender,
+            [FromBody] RequestEscalationRequest request,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);

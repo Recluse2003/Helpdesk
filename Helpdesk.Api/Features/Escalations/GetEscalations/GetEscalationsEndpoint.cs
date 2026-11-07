@@ -3,6 +3,7 @@ using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Escalations.GetEscalations
 {
@@ -21,8 +22,8 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalations
         }
 
         private static async Task<IResult> Handle(
-            GetEscalationsRequest request,
-            ISender mediator,
+            [AsParameters] GetEscalationsRequest request,
+            [FromServices] ISender mediator,
             CancellationToken cancellationToken)
         {
             var query = new GetEscalationsQuery(

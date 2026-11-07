@@ -2,6 +2,7 @@
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
@@ -11,7 +12,7 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapGet("api/escalation/{id:guid}", Handle)
-                .WithTags("escalation")
+                .WithTags("Escalations")
                 .WithName("GetEscalationDetails")
                 .Produces<EscalationRequestDetailsDto>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -25,7 +26,7 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
         private static async Task<IResult> Handle(
             Guid id,
             ClaimsPrincipal user,
-            ISender sender,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);

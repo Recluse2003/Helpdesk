@@ -3,6 +3,7 @@ using Helpdesk.Api.Features.Tickets.GetTicketsByUserId;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
@@ -24,7 +25,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
         private static async Task<IResult> Handle(
             Guid ticketId,
             ClaimsPrincipal user,
-            ISender sender,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);

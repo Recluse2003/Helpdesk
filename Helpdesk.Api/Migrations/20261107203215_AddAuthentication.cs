@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
+namespace Helpdesk.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentity : Migration
+    public partial class AddAuthentication : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,6 +30,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -48,59 +49,6 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EscalationRequests",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ResponseReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RequestedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProposedRecipientUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RespondedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RespondedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EscalationRequests", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TicketActivities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EventType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsPublic = table.Column<bool>(type: "bit", nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ActorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TicketActivities", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TicketMessages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsPublic = table.Column<bool>(type: "bit", nullable: false),
-                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AuthorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TicketMessages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -240,6 +188,114 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "EscalationRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
+                    ResponseReason = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: true),
+                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequestedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProposedRecipientUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    RespondedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    NewSupportAgentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RespondedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EscalationRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EscalationRequests_AspNetUsers_NewSupportAgentId",
+                        column: x => x.NewSupportAgentId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EscalationRequests_AspNetUsers_ProposedRecipientUserId",
+                        column: x => x.ProposedRecipientUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EscalationRequests_AspNetUsers_RequestedByUserId",
+                        column: x => x.RequestedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EscalationRequests_AspNetUsers_RespondedByUserId",
+                        column: x => x.RespondedByUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EscalationRequests_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketActivities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EventType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsPublic = table.Column<bool>(type: "bit", nullable: false),
+                    Details = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ActorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketActivities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketActivities_AspNetUsers_ActorUserId",
+                        column: x => x.ActorUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TicketActivities_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: false),
+                    IsPublic = table.Column<bool>(type: "bit", nullable: false),
+                    TicketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AuthorUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketMessages_AspNetUsers_AuthorUserId",
+                        column: x => x.AuthorUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TicketMessages_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -280,6 +336,51 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EscalationRequests_NewSupportAgentId",
+                table: "EscalationRequests",
+                column: "NewSupportAgentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EscalationRequests_ProposedRecipientUserId",
+                table: "EscalationRequests",
+                column: "ProposedRecipientUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EscalationRequests_RequestedByUserId",
+                table: "EscalationRequests",
+                column: "RequestedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EscalationRequests_RespondedByUserId",
+                table: "EscalationRequests",
+                column: "RespondedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EscalationRequests_TicketId",
+                table: "EscalationRequests",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketActivities_ActorUserId",
+                table: "TicketActivities",
+                column: "ActorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketActivities_TicketId",
+                table: "TicketActivities",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketMessages_AuthorUserId",
+                table: "TicketMessages",
+                column: "AuthorUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketMessages_TicketId",
+                table: "TicketMessages",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tickets_AssignedToId",
                 table: "Tickets",
                 column: "AssignedToId");
@@ -318,10 +419,10 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                 name: "TicketMessages");
 
             migrationBuilder.DropTable(
-                name: "Tickets");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Tickets");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

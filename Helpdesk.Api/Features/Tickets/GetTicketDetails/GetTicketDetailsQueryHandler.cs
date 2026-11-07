@@ -141,7 +141,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
                    a.CreatedAt,
                    null,
                    a.Details,
-                   a.ActivityType
+                   a.EventType
                )).ToList();
 
             // Convert messages into timeline items, and add it to the existing timeline, then sort. 

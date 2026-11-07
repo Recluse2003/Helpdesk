@@ -4,25 +4,28 @@ using Helpdesk.Api.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
+namespace Helpdesk.Api.Migrations
 {
     [DbContext(typeof(HelpdeskDbContext))]
-    partial class HelpdeskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261107203215_AddAuthentication")]
+    partial class AddAuthentication
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.13")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Helpdesk.Domain.Entities.EscalationRequest", b =>
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.EscalationRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,11 +34,15 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ProposedRecipientUserId")
+                    b.Property<Guid?>("NewSupportAgentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ProposedRecipientUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reason")
                         .IsRequired()
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("RequestedByUserId")
@@ -48,20 +55,33 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ResponseReason")
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<Guid>("TicketId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("NewSupportAgentId");
+
+                    b.HasIndex("ProposedRecipientUserId");
+
+                    b.HasIndex("RequestedByUserId");
+
+                    b.HasIndex("RespondedByUserId");
+
+                    b.HasIndex("TicketId");
+
                     b.ToTable("EscalationRequests");
                 });
 
-            modelBuilder.Entity("Helpdesk.Domain.Entities.Ticket", b =>
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.Ticket", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,24 +128,26 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("Helpdesk.Domain.Entities.TicketActivity", b =>
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.TicketActivity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ActorUserId")
+                    b.Property<Guid?>("ActorUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Details")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("EventType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("bit");
@@ -135,10 +157,14 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ActorUserId");
+
+                    b.HasIndex("TicketId");
+
                     b.ToTable("TicketActivities");
                 });
 
-            modelBuilder.Entity("Helpdesk.Domain.Entities.TicketMessage", b =>
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.TicketMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,6 +175,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -162,10 +189,14 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthorUserId");
+
+                    b.HasIndex("TicketId");
+
                     b.ToTable("TicketMessages");
                 });
 
-            modelBuilder.Entity("Helpdesk.Infrastructure.Persistence.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -176,6 +207,10 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -362,17 +397,78 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Helpdesk.Domain.Entities.Ticket", b =>
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.EscalationRequest", b =>
                 {
-                    b.HasOne("Helpdesk.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("NewSupportAgentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ProposedRecipientUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("RequestedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("RespondedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Helpdesk.Api.Domain.Entities.Ticket", "Ticket")
+                        .WithMany("EscalationRequests")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.Ticket", b =>
+                {
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("AssignedToId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Helpdesk.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.TicketActivity", b =>
+                {
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ActorUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Helpdesk.Api.Domain.Entities.Ticket", null)
+                        .WithMany("Activities")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.TicketMessage", b =>
+                {
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Helpdesk.Api.Domain.Entities.Ticket", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -387,7 +483,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Helpdesk.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,7 +492,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Helpdesk.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -411,7 +507,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Helpdesk.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -420,11 +516,20 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Helpdesk.Infrastructure.Persistence.Models.ApplicationUser", null)
+                    b.HasOne("Helpdesk.Api.Infrastructure.Persistence.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Helpdesk.Api.Domain.Entities.Ticket", b =>
+                {
+                    b.Navigation("Activities");
+
+                    b.Navigation("EscalationRequests");
+
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

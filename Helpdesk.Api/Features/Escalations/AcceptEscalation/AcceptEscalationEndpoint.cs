@@ -2,6 +2,7 @@
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Escalations.AcceptEscalation
@@ -26,8 +27,8 @@ namespace Helpdesk.Api.Features.Escalations.AcceptEscalation
         private static async Task<IResult> Handle(
             ClaimsPrincipal user,
             Guid escalationRequestId,
-            AcceptEscalationRequest request,
-            ISender sender,
+            [FromBody] AcceptEscalationRequest request,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);

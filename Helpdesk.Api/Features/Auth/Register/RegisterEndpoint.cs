@@ -2,6 +2,7 @@
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata;
 
 namespace Helpdesk.Api.Features.Auth.Register
@@ -11,16 +12,16 @@ namespace Helpdesk.Api.Features.Auth.Register
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("/api/auth/register", Handle)
-            .WithTags("Authentication")
-            .WithName("Register")
-            .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status409Conflict);
+                .WithTags("Authentication")
+                .WithName("Register")
+                .Produces(StatusCodes.Status204NoContent)
+                .ProducesProblem(StatusCodes.Status400BadRequest)
+                .ProducesProblem(StatusCodes.Status409Conflict);
         }
 
         private static async Task<IResult> Handle(
-            RegisterRequest request,
-            ISender sender,
+            [FromBody] RegisterRequest request,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var command = new RegisterCommand(

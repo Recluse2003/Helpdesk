@@ -3,6 +3,7 @@ using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
@@ -26,8 +27,8 @@ namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
         private static async Task<IResult> Handle(
             ClaimsPrincipal user,
             Guid ticketId,
-            ChangeTicketPriorityRequest request,
-            ISender sender,
+            [FromBody] ChangeTicketPriorityRequest request,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);

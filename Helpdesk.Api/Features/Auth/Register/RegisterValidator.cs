@@ -22,12 +22,14 @@ public class RegisterValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(x => x.Password)
             .NotEmpty()
+            .WithMessage("A password must be specified.")
             .MinimumLength(8)
+            .WithMessage("A password must contain 9 or more characters.")
             .Matches("[A-Z]")
-            .WithMessage("Password must contain at least one uppercase letter.")
+            .WithMessage("A password must contain at least one uppercase letter.")
             .Matches("[a-z]")
-            .WithMessage("Password must contain at least one lowercase letter.")
+            .WithMessage("A password must contain at least one lowercase letter.")
             .Matches("[0-9]")
-            .WithMessage("Password must contain at least one digit.");
+            .WithMessage("A password must contain at least one digit.");
     }
 }

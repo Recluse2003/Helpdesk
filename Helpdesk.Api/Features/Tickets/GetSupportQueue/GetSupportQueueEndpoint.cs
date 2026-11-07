@@ -3,6 +3,7 @@ using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
 {
@@ -20,8 +21,8 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         }
 
         private static async Task<IResult> Handle(
-            GetSupportQueueRequest request,
-            ISender mediator,
+            [AsParameters] GetSupportQueueRequest request,
+            [FromServices] ISender mediator,
             CancellationToken cancellationToken)
         {
             var query = new GetSupportQueueQuery(

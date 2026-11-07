@@ -31,7 +31,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
 
             builder.Property(er => er.RespondedAt);
 
-            builder.HasOne<Ticket>()
+            builder.HasOne(er => er.Ticket)
                 .WithMany(t => t.EscalationRequests)
                 .HasForeignKey(er => er.TicketId)
                 .IsRequired()

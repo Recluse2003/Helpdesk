@@ -2,6 +2,7 @@
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.ClaimTicket
@@ -25,7 +26,7 @@ namespace Helpdesk.Api.Features.Tickets.ClaimTicket
         private static async Task<IResult> Handle(
             ClaimsPrincipal user,
             Guid ticketId,
-            ISender sender,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);

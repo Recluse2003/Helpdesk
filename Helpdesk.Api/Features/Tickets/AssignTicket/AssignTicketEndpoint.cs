@@ -3,6 +3,7 @@ using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.AssignTicket
@@ -25,9 +26,8 @@ namespace Helpdesk.Api.Features.Tickets.AssignTicket
         private static async Task<IResult> Handle(
             ClaimsPrincipal user,
             Guid ticketId,
-            AssignTicketRequest request,
-            TicketPriority newPriority,
-            ISender sender,
+            [FromBody] AssignTicketRequest request,
+            [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
             var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);

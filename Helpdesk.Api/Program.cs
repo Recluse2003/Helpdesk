@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,26 @@ var apiAssembly = typeof(Program).Assembly;
 // Core framework configurations
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT access token."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+    });
+});
+
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -36,8 +57,6 @@ builder.Services.AddValidatorsFromAssembly(apiAssembly);
 builder.Services.AddDbContext<HelpdeskDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Helpdesk"))
 );
-
-
 
 // Identity core configuration
 builder.Services
@@ -65,21 +84,30 @@ builder.Services.Configure<ApiSettings>(
 var apiSettings = builder.Configuration
     .GetSection("ApiSettings")
     .Get<ApiSettings>()
-    ?? throw new InvalidOperationException("ApiSettings configuration is missing.");
+    ?? throw new InvalidOperationException(
+        "ApiSettings configuration is missing.");
 
 if (string.IsNullOrWhiteSpace(apiSettings.Secret) ||
     string.IsNullOrWhiteSpace(apiSettings.Issuer) ||
     string.IsNullOrWhiteSpace(apiSettings.Audience))
 {
-    throw new InvalidOperationException("ApiSettings must contain Secret, Issuer and Audience.");
+    throw new InvalidOperationException(
+        "ApiSettings must contain Secret, Issuer and Audience.");
 }
 
-var key = Convert.FromBase64String(apiSettings.Secret);
+byte[] key;
+
+try
+{
+    key = Convert.FromBase64String(apiSettings.Secret);
+}
+catch (FormatException ex)
+{
+    throw new InvalidOperationException("ApiSettings:Secret must be a valid Base64 string.", ex);
+}
 
 if (key.Length < 32)
-{
     throw new InvalidOperationException("The JWT signing key must contain at least 32 bytes.");
-}
 
 // Authentication & Authorization
 builder.Services
@@ -122,6 +150,8 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -141,7 +171,6 @@ using (var scope = app.Services.CreateScope())
     // Apply pending migrations automatically
     await dbContext.Database.MigrateAsync();
 
-    // Fixed a small bug: passing IdentityRole<Guid> to match AddRoles structure
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 

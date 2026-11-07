@@ -28,7 +28,6 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Services
 
         public static async Task SeedAdminAccountAsync(UserManager<ApplicationUser> userManager)
         {
-            var adminUsername = "admin";
             var adminEmail = "admin@gmail.com";
 
             // Check if admin already exists
@@ -37,7 +36,8 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Services
             {
                 admin = new ApplicationUser
                 {
-                    UserName = adminUsername,
+                    DisplayName = "admin",
+                    UserName = adminEmail,
                     Email = adminEmail,
                     EmailConfirmed = true
                 };
