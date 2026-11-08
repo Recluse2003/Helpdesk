@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Domain\ValueObjects\" />
-    <Folder Include="Features\Auth\GetCurrentUser\" />
     <Folder Include="Features\Auth\RefreshToken\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
