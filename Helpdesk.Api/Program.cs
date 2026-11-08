@@ -1,9 +1,11 @@
 using FluentValidation;
 using Helpdesk.Api.Infrastructure.Authentication;
+using Helpdesk.Api.Infrastructure.Configuration;
 using Helpdesk.Api.Infrastructure.Middleware; 
 using Helpdesk.Api.Infrastructure.Persistence; 
 using Helpdesk.Api.Infrastructure.Persistence.Models; 
 using Helpdesk.Api.Infrastructure.Persistence.Services;
+using Helpdesk.Api.Infrastructure.Services;
 using Helpdesk.Api.Shared.Behaviors;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
@@ -141,6 +143,20 @@ builder.Services
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services
+    .AddOptions<EmailSettings>()
+    .Bind(builder.Configuration.GetSection("Email"))
+    .Validate(settings =>
+        !string.IsNullOrWhiteSpace(settings.From) &&
+        !string.IsNullOrWhiteSpace(settings.SmtpServer) &&
+        settings.Port > 0 &&
+        !string.IsNullOrWhiteSpace(settings.Username) &&
+        !string.IsNullOrWhiteSpace(settings.Password),
+        "Email configuration is incomplete.")
+    .ValidateOnStart();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 
