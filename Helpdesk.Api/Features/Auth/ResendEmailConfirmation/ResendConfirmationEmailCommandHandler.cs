@@ -8,20 +8,20 @@ using System.Text;
 
 namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
 {
-    public class ResendEmailConfirmationCommandHandler : IRequestHandler<ResendEmailConfirmationCommand, Result>
+    public class ResendConfirmationEmailCommandHandler : IRequestHandler<ResendConfirmationEmailCommand, Result>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
 
-        public ResendEmailConfirmationCommandHandler(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService)
+        public ResendConfirmationEmailCommandHandler(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService)
         {
             _userManager = userManager;
             _configuration = configuration;
             _emailService = emailService;
         }
 
-        public async Task<Result> Handle(ResendEmailConfirmationCommand command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(ResendConfirmationEmailCommand command, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(command.Email);
 

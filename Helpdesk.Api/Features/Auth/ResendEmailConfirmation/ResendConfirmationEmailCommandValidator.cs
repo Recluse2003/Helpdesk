@@ -2,9 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
 {
-    public class ResendEmailConfirmationCommandValidator : AbstractValidator<ResendEmailConfirmationCommand>
+    public class ResendConfirmationEmailCommandValidator : AbstractValidator<ResendConfirmationEmailCommand>
     {
-        public ResendEmailConfirmationCommandValidator() 
+        public ResendConfirmationEmailCommandValidator() 
         {
             RuleFor(x => x.Email)
                 .NotEmpty()

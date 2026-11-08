@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
 {
-    public class ResendEmailConfirmationEndpoint : IEndpoint
+    public class ResendConfirmationEmailEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapPost("/api/auth/resend-email-confirmation", Handle)
+            app.MapPost("/api/auth/resend-confirmation-email", Handle)
                 .WithTags("Authentication")
-                .WithName("ResendEmailConfirmation")
+                .WithName("ResendConfirmationEmail")
                 .Produces(StatusCodes.Status204NoContent)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .ProducesProblem(StatusCodes.Status404NotFound)
@@ -23,7 +23,7 @@ namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
             [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {
-            var command = new ResendEmailConfirmationCommand(request.Email);
+            var command = new ResendConfirmationEmailCommand(request.Email);
 
             var result = await sender.Send(command, cancellationToken);
 
