@@ -18,7 +18,7 @@ namespace Helpdesk.Api.Features.Auth.Register
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .ProducesProblem(StatusCodes.Status409Conflict);
         }
-
+        
         private static async Task<IResult> Handle(
             [FromBody] RegisterRequest request,
             [FromServices] ISender sender,
