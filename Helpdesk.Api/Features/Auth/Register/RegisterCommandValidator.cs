@@ -2,9 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.Register;
 
-public class RegisterValidator : AbstractValidator<RegisterCommand>
+public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
-    public RegisterValidator()
+    public RegisterCommandValidator()
     {
         RuleFor(x => x.DisplayName)
             .NotEmpty()

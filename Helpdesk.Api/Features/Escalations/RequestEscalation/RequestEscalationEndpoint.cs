@@ -1,5 +1,4 @@
 ﻿using Helpdesk.Api.Domain.Common;
-using Helpdesk.Api.Features.Tickets.CreateTicket;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;

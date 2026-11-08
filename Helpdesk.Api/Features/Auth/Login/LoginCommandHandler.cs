@@ -26,7 +26,10 @@ namespace Helpdesk.Api.Features.Auth.Login
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user is null)
-                return Error.Unauthorized("Auth.InvalidCredentials", "Invalid email or password.");
+                return Error.Unauthorized("Auth.InvalidCredentials", "Invalid email or .");
+
+            if (!user.EmailConfirmed)
+                return Error.Conflict("Auth.EmailNotConfirmed", "Account email has not been confirmed.");
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 

@@ -1,35 +1,42 @@
 ﻿using Helpdesk.Api.Domain.Common;
 using Helpdesk.Api.Infrastructure.Persistence.Models;
+using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace Helpdesk.Api.Features.Auth.Register
 {
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public RegisterCommandHandler(UserManager<ApplicationUser> userManager)
+        public RegisterCommandHandler(UserManager<ApplicationUser> userManager, IConfiguration configuration, IEmailService emailService)
         {
             _userManager = userManager;
+            _configuration = configuration;
+            _emailService = emailService;
         }
 
-        public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(RegisterCommand confirm, CancellationToken cancellationToken)
         {
-            var existingUser = await _userManager.FindByEmailAsync(request.Email.Trim());
+            var existingUser = await _userManager.FindByEmailAsync(confirm.Email.Trim());
 
             if (existingUser != null)
                 return Error.Conflict("Auth.EmailAlreadyRegistered", "An account with this email address already exists.");
 
             var user = new ApplicationUser
             {
-                UserName = request.Email.Trim(),
-                Email = request.Email.Trim(),
-                DisplayName = request.DisplayName.Trim(),
-                EmailConfirmed = true
+                UserName = confirm.Email.Trim(),
+                Email = confirm.Email.Trim(),
+                DisplayName = confirm.DisplayName.Trim(),
+                EmailConfirmed = false
             };
 
-            var createResult = await _userManager.CreateAsync(user, request.Password);
+            var createResult = await _userManager.CreateAsync(user, confirm.Password);
 
             if (!createResult.Succeeded)
             {
@@ -47,6 +54,30 @@ namespace Helpdesk.Api.Features.Auth.Register
 
                 return Error.Failure("Auth.RoleAssignmentFailed", "Unable to assign the customer role.");
             }
+
+            var userId = await _userManager.GetUserIdAsync(user);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            var confirmationLink = QueryHelpers.AddQueryString(
+                $"{_configuration["Frontend:BaseUrl"]}/auth/confirm-email",
+                new Dictionary<string, string?>
+                {
+                    ["userId"] = userId,
+                    ["code"] = code
+                });
+
+            var htmlMessage = $"""
+                <h2>Confirm your email address</h2>
+                <p>Thanks for registering!</p>
+                <p><a href="{confirmationLink}">Confirm your email</a></p>
+                """;
+
+            await _emailService.SendEmailAsync(
+                user.Email!,
+                "Confirm your email address",
+                htmlMessage,
+                cancellationToken);
 
             return Result.Success();
         }

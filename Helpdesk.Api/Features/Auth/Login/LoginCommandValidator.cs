@@ -2,9 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.Login
 {
-    public class LoginValidator : AbstractValidator<LoginCommand>
+    public class LoginCommandValidator : AbstractValidator<LoginCommand>
     {
-        public LoginValidator() 
+        public LoginCommandValidator() 
         {
             RuleFor(x => x.Email)
                 .NotEmpty()
