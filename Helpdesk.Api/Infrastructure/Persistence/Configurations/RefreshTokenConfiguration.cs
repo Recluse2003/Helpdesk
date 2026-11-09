@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
 {
+    /// <summary>
+    /// Configures the Entity Framework Core database mapping for the <see cref="RefreshToken"/> entity.
+    /// </summary>
     public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
     {
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
