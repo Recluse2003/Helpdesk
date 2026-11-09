@@ -1,6 +1,4 @@
-﻿using Helpdesk.Api.Domain.Common;
-using Helpdesk.Api.Features.Tickets.GetTicketsByUserId;
-using Helpdesk.Api.Shared.Extensions;
+﻿using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +6,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for retrieving the details of an existing support ticket. 
+    /// </summary>
     public sealed class GetTicketDetailsEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

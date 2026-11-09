@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.Register;
 
+/// <summary>
+/// Defines validation rules for register new account registers. 
+/// </summary>
 public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
     public RegisterCommandValidator()

@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for resending out account email confirmation. 
+    /// </summary>
     public class ResendConfirmationEmailEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

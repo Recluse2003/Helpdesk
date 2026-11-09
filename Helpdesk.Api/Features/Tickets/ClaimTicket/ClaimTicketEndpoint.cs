@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.ClaimTicket
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for allowing support agents to claim unassigned support tickets. 
+    /// </summary>
     public sealed class ClaimTicketEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

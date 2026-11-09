@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.ConfirmEmail
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for account email confirmation. 
+    /// </summary>
     public class ConfirmEmailEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

@@ -1,5 +1,4 @@
 ﻿using Helpdesk.Api.Domain.Common;
-using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
@@ -8,6 +7,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.AssignTicket
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for allowing administrators to assign support tickets to support agents. 
+    /// </summary>
     public class AssignTicketEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

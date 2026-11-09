@@ -8,6 +8,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.CreateTicket
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for creating a new support ticket. 
+    /// </summary>
     public sealed class CreateTicketEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

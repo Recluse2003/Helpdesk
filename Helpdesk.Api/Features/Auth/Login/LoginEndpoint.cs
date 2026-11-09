@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.Login
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for authenticating users.
+    /// </summary>
     public class LoginEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.Refresh
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for retrieving new access and refresh token using an existing refresh token.
+    /// </summary>
     public class RefreshEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

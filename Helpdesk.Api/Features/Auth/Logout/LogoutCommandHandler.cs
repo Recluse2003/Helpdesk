@@ -8,6 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Api.Features.Auth.Logout
 {
+    /// <summary>
+    /// Handles incoming logout command. 
+    /// </summary>
+    /// <remarks>
+    /// Revokes the provided refresh token. 
+    /// </remarks>
     public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result>
     {
         private readonly HelpdeskDbContext _context;
@@ -24,6 +30,13 @@ namespace Helpdesk.Api.Features.Auth.Logout
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Processes an account logout command.
+        /// </summary>
+        /// <param name="command">Contains the refresh token of the active session.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>A <see cref="Result"/> if successful, else returns a <see cref="Result"/> containing an <see cref="Error"/>
+        /// explaining why the request failed. </returns>
         public async Task<Result> Handle(LogoutCommand command, CancellationToken cancellationToken)
         {
             var now = DateTime.UtcNow;

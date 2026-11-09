@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.ResetPassword
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for resetting an account's password. 
+    /// </summary>
     public class ResetPasswordEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

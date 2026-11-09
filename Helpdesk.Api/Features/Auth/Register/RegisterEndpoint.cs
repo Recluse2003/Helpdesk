@@ -1,12 +1,13 @@
 ﻿using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata;
 
 namespace Helpdesk.Api.Features.Auth.Register
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for registering a new account. 
+    /// </summary>
     public class RegisterEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Escalations.RejectEscalation
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for rejecting an existing escalation request.
+    /// </summary>
     public class RejectEscalationEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

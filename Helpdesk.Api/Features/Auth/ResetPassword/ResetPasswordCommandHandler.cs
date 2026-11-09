@@ -7,6 +7,14 @@ using System.Text;
 
 namespace Helpdesk.Api.Features.Auth.ResetPassword
 {
+    /// <summary>
+    /// Handles incoming reset password requests.
+    /// </summary>
+    /// <remarks>
+    /// The handler verifies that the account exists and has a confirmed email address before validating the password reset 
+    /// code. Password updates are performed through ASP.NET Core Identity, which  validates the new password against the
+    /// configured password requirements.
+    /// </remarks>
     public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, Result>
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -16,6 +24,15 @@ namespace Helpdesk.Api.Features.Auth.ResetPassword
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Processes a password reset request. 
+        /// </summary>
+        /// <param name="command">Contains the account's unique identifier, password reset code and new password.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> if successful, else returns a <see cref="Result"/> containing an <see cref="Error"/> 
+        /// explaining why the request failed. 
+        /// </returns>
         public async Task<Result> Handle(ResetPasswordCommand command, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(command.UserId.ToString());

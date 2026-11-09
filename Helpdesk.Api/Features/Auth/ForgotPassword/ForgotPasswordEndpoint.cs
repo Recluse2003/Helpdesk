@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.ForgotPassword
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for dealing with accounts with forgotten passwords. 
+    /// </summary>
     public class ForgotPasswordEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

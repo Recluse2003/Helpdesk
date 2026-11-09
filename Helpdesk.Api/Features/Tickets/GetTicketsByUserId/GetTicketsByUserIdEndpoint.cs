@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for retrieving the support tickets of the current user. 
+    /// </summary>
     public sealed class GetTicketsByUserIdEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

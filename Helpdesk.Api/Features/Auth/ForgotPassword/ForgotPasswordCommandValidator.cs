@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.ForgotPassword
 {
+    /// <summary>
+    /// Defines validation rules for forgot password requests. 
+    /// </summary>
     public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCommand>
     {
         public ForgotPasswordCommandValidator() 

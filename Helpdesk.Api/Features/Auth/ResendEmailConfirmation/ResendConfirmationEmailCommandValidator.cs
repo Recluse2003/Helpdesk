@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
 {
+    /// <summary>
+    /// Defines validation rules for resending account confirmation email requests. 
+    /// </summary>
     public class ResendConfirmationEmailCommandValidator : AbstractValidator<ResendConfirmationEmailCommand>
     {
         public ResendConfirmationEmailCommandValidator() 

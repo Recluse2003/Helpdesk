@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Auth.Logout
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for logging out the current user. 
+    /// </summary>
     public class LogoutEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

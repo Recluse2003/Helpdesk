@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.ResetPassword
 {
+    /// <summary>
+    /// Defines validation rules for reset password requests. 
+    /// </summary>
     public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordCommand>
     {
         public ResetPasswordCommandValidator()

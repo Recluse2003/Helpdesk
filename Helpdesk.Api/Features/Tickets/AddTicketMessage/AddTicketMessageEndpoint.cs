@@ -1,5 +1,4 @@
-﻿using Helpdesk.Api.Domain.Enums;
-using Helpdesk.Api.Shared.Extensions;
+﻿using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,10 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
 {
-    public class AddTicketMessageEndpoint : IEndpoint
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for adding a message to an active ticket. 
+    /// </summary>
+    public sealed class AddTicketMessageEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {

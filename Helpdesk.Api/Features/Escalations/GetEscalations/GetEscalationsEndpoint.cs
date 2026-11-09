@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Escalations.GetEscalations
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for retrieving a personalised paged list of escalation requests, based on the 
+    /// filters provided. 
+    /// </summary>
     public class GetEscalationsEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

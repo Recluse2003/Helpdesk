@@ -2,6 +2,9 @@
 
 namespace Helpdesk.Api.Features.Auth.Login
 {
+    /// <summary>
+    /// Defines validation rules for login user requests.
+    /// </summary>
     public class LoginCommandValidator : AbstractValidator<LoginCommand>
     {
         public LoginCommandValidator() 

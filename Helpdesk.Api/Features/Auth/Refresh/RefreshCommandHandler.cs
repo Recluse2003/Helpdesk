@@ -9,6 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Api.Features.Auth.Refresh
 {
+    /// <summary>
+    /// Handles incoming token refresh requests.
+    /// </summary>
+    /// <remarks>
+    /// The handler verifies that the supplied refresh token is active and belongs to an existing, confirmed and unlocked user 
+    /// account. Once validated, the existing refresh token is revoked, and replaced with a newly generated refresh token
+    /// alongside a new access token. 
+    /// </remarks>
     public class RefreshCommandHandler : IRequestHandler<RefreshCommand, Result<RefreshResponseDto>>
     {
         private readonly HelpdeskDbContext _context;
@@ -25,6 +33,15 @@ namespace Helpdesk.Api.Features.Auth.Refresh
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Processes a refresh token request. 
+        /// </summary>
+        /// <param name="command">Contains the refresh token of the current active session.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> containing the new access and refresh tokens if successful, else returns a 
+        /// <see cref="Result"/> containing an <see cref="Error"/> explaining why the request failed. 
+        /// </returns>
         public async Task<Result<RefreshResponseDto>> Handle(RefreshCommand command, CancellationToken cancellationToken)
         {
             var now = DateTime.UtcNow;
@@ -44,7 +61,6 @@ namespace Helpdesk.Api.Features.Auth.Refresh
             if (await _userManager.IsLockedOutAsync(user))
                 return Error.Unauthorized("Auth.InvalidRefreshToken", "Invalid or expired refresh token.");
             
-
             var roles = await _userManager.GetRolesAsync(user);
 
             var accessToken = _tokenService.GenerateAccessToken(

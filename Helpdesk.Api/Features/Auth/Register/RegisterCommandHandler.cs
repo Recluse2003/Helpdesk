@@ -8,6 +8,14 @@ using System.Text;
 
 namespace Helpdesk.Api.Features.Auth.Register
 {
+    /// <summary>
+    /// Handles incoming register new account commands. 
+    /// </summary>
+    /// <remarks>
+    /// Verifies an account with the provided email address doesn't already exist, before attempting to create a new, unconfirmed
+    /// account with the provided details. The new account is provided the customer role by default, and is not usable until 
+    /// the email address has been confirmed. 
+    /// </remarks>
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -21,6 +29,15 @@ namespace Helpdesk.Api.Features.Auth.Register
             _emailService = emailService;
         }
 
+        /// <summary>
+        /// Processes a register new account request.
+        /// </summary>
+        /// <param name="confirm">Contains the new account's email, password, and display name.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> if successful, else returns a <see cref="Result"/> containing an <see cref="Error"/> 
+        /// explaining why the request failed. 
+        /// </returns>
         public async Task<Result> Handle(RegisterCommand confirm, CancellationToken cancellationToken)
         {
             var existingUser = await _userManager.FindByEmailAsync(confirm.Email.Trim());

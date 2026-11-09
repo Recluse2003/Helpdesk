@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for retrieving a personalised paged list of tickets, based on the 
+    /// filters provided. 
+    /// </summary>
     public sealed class GetSupportQueueEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

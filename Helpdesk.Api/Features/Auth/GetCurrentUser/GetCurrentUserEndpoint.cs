@@ -8,6 +8,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Auth.GetCurrentUser
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for retrieving details of the current user. 
+    /// </summary>
     public class GetCurrentUserEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

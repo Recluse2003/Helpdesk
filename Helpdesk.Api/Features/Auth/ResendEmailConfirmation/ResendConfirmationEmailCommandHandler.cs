@@ -8,6 +8,13 @@ using System.Text;
 
 namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
 {
+    /// <summary>
+    /// Handles incoming resend account email confirmation requests. 
+    /// </summary>
+    /// <remarks>
+    /// Verifies the account exists and hasn't already been verified using the provided email address, beforing sending an email
+    /// with a link for confirming the account to the provided address. 
+    /// </remarks>
     public class ResendConfirmationEmailCommandHandler : IRequestHandler<ResendConfirmationEmailCommand, Result>
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -21,6 +28,15 @@ namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
             _emailService = emailService;
         }
 
+        /// <summary>
+        /// Processes a resend confirmation email command. 
+        /// </summary>
+        /// <param name="command">Contains the email address of the account requiring a new confirmation email.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> if successful, else returns a <see cref="Result"/> containing an <see cref="Error"/> 
+        /// explaining why the request failed. 
+        /// </returns>
         public async Task<Result> Handle(ResendConfirmationEmailCommand command, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(command.Email);

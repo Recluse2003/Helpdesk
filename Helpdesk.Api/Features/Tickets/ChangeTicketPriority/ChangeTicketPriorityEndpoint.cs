@@ -8,6 +8,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.ChangeTicketPriority
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for changing the priority of a support ticket. 
+    /// </summary>
     public sealed class ChangeTicketPriorityEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

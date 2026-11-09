@@ -5,11 +5,15 @@ using Helpdesk.Api.Infrastructure.Persistence.Models;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using static Helpdesk.Api.Features.Auth.Login.LoginEndpoint;
 
 namespace Helpdesk.Api.Features.Auth.Login
 {
+    /// <summary>
+    /// Handles incoming login commands.
+    /// </summary>
+    /// <remarks>
+    /// Handles user authentication and returns access and refresh tokens the supplied credentials matches an existing account.
+    /// </remarks>
     public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginResponseDto>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -29,8 +33,18 @@ namespace Helpdesk.Api.Features.Auth.Login
             _context = context;
         }
 
+        /// <summary>
+        /// Procesess an account login command. 
+        /// </summary>
+        /// <param name="request">Contains the user's email address and password.</param>
+        /// <param name="cancellationToken">A token used to cancel the asynchronous operation.</param>
+        /// <returns>
+        /// A <see cref="Result"/> containing the new access and refresh tokens if successful, else returns a 
+        /// <see cref="Result"/> containing an <see cref="Error"/> explaining why the request failed. 
+        /// </returns>
         public async Task<Result<LoginResponseDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
+            // Attempts to retrieves the user with the supplied email address, and verifiy the account's email has been confirmed.
             var email = request.Email.Trim();
 
             var user = await _userManager.FindByEmailAsync(email);
@@ -39,17 +53,22 @@ namespace Helpdesk.Api.Features.Auth.Login
                 return Error.Unauthorized("Auth.InvalidCredentials", "Invalid email or password.");
 
             if (!user.EmailConfirmed)
-                return Error.Conflict("Auth.EmailNotConfirmed", "Account email has not been confirmed.");
+                return Error.Conflict("Auth.EmailNotConfirmed", "Account email address has not been confirmed.");
 
+            // Attempts to login with the user entity and password. Multiple failures will result in the user being locked out of 
+            // the account.
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
             if (!signInResult.Succeeded)
                 return Error.Unauthorized("Auth.InvalidCredentials", "Invalid email or password.");
 
+            // Retrieves the user's roles, and then create a jwt access token with the user's ID, email, display name, and roles
+            // as claims. 
             var roles = await _userManager.GetRolesAsync(user);
 
             var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.DisplayName, roles);
 
+            // Generates a new refresh token and persists it. 
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             var refreshTokenHash = _tokenService.HashRefreshToken(refreshToken);
@@ -60,8 +79,6 @@ namespace Helpdesk.Api.Features.Auth.Login
                 user.Id,
                 refreshTokenHash,
                 refreshTokenExpiry);
-
-            await _signInManager.SignOutAsync();
 
             _context.RefreshTokens.Add(refreshTokenEntity);
 

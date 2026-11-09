@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for retrieving the details of an existing escalation request. 
+    /// </summary>
     public class GetEscalationDetailsEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Escalations.AcceptEscalation
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for accepting an existing escalation request.
+    /// </summary>
     public class AcceptEscalationEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)

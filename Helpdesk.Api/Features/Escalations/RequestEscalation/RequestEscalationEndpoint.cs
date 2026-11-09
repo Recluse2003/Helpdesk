@@ -7,6 +7,9 @@ using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Escalations.RequestEscalation
 {
+    /// <summary>
+    /// Defines the HTTP endpoint responsible for requesting escalation of an active ticket. 
+    /// </summary>
     public class RequestEscalationEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
