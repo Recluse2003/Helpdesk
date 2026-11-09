@@ -61,6 +61,8 @@ namespace Helpdesk.Api.Features.Auth.Login
                 refreshTokenHash,
                 refreshTokenExpiry);
 
+            await _signInManager.SignOutAsync();
+
             _context.RefreshTokens.Add(refreshTokenEntity);
 
             await _context.SaveChangesAsync(cancellationToken);

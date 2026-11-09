@@ -29,8 +29,7 @@ namespace Helpdesk.Api.Features.Auth.Refresh
         {
             var now = DateTime.UtcNow;
 
-            var tokenHash = _tokenService.HashRefreshToken(
-                command.RefreshToken);
+            var tokenHash = _tokenService.HashRefreshToken(command.RefreshToken);
 
             var storedToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.TokenHash == tokenHash, cancellationToken);
 
