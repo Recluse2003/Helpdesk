@@ -1,25 +1,35 @@
 ﻿using Helpdesk.Api.Domain.Common;
+using Helpdesk.Api.Domain.Entities;
+using Helpdesk.Api.Infrastructure.Persistence;
 using Helpdesk.Api.Infrastructure.Persistence.Models;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using static Helpdesk.Api.Features.Auth.Login.LoginEndpoint;
 
 namespace Helpdesk.Api.Features.Auth.Login
 {
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginResponse>>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginResponseDto>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly HelpdeskDbContext _context;
 
-        public LoginCommandHandler(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ITokenService tokenService)
+        public LoginCommandHandler(
+            UserManager<ApplicationUser> userManager, 
+            SignInManager<ApplicationUser> signInManager, 
+            ITokenService tokenService, 
+            HelpdeskDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _context = context;
         }
 
-        public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<Result<LoginResponseDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var email = request.Email.Trim();
 
@@ -38,11 +48,24 @@ namespace Helpdesk.Api.Features.Auth.Login
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            var token = _tokenService.GenerateToken(user.Id, user.Email!, user.DisplayName, roles);
+            var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, user.DisplayName, roles);
 
-            return new LoginResponse(token.AccessToken, token.ExpiresAt);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            var refreshTokenHash = _tokenService.HashRefreshToken(refreshToken);
+
+            var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+
+            var refreshTokenEntity = new RefreshToken(
+                user.Id,
+                refreshTokenHash,
+                refreshTokenExpiry);
+
+            _context.RefreshTokens.Add(refreshTokenEntity);
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return new LoginResponseDto(accessToken, refreshToken);
         }
     }
-
-    public record LoginResponse(string AccessToken, DateTime ExpiresAt);
 }

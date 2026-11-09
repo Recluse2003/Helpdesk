@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <Folder Include="Domain\ValueObjects\" />
-    <Folder Include="Features\Auth\RefreshToken\" />
+    <Folder Include="Features\Auth\Logout\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

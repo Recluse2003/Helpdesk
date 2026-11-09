@@ -12,6 +12,7 @@ namespace Helpdesk.Api.Infrastructure.Persistence
         public DbSet<TicketActivity> TicketActivities => Set<TicketActivity>();
         public DbSet<TicketMessage> TicketMessages => Set<TicketMessage>();
         public DbSet<EscalationRequest> EscalationRequests => Set<EscalationRequest>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         public HelpdeskDbContext(DbContextOptions<HelpdeskDbContext> options) : base(options)
         {

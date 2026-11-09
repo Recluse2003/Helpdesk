@@ -3,11 +3,12 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
-
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Helpdesk.Api.Infrastructure.Authentication
 {
+
     public class TokenService : ITokenService
     {
         private readonly ApiSettings _settings;
@@ -16,21 +17,14 @@ namespace Helpdesk.Api.Infrastructure.Authentication
         public TokenService(IOptions<ApiSettings> options)
         {
             _settings = options.Value;
-
             _signingKey = Convert.FromBase64String(_settings.Secret);
 
             if (_signingKey.Length < 32)
-            {
-                throw new InvalidOperationException(
-                    "The JWT signing key must contain at least 32 bytes.");
-            }
+                throw new InvalidOperationException("The JWT signing key must contain at least 32 bytes.");
         }
 
-        public GeneratedToken GenerateToken(
-            Guid userId,
-            string email,
-            string displayName,
-            IEnumerable<string> roles)
+        // Access token
+        public string GenerateAccessToken(Guid userId, string email, string displayName, IEnumerable<string> roles)
         {
             var expiresAt = DateTime.UtcNow.AddMinutes(30);
 
@@ -57,9 +51,20 @@ namespace Helpdesk.Api.Infrastructure.Authentication
                 expires: expiresAt,
                 signingCredentials: signingCredentials);
 
-            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
-            return new GeneratedToken(accessToken, expiresAt);
+        // Refresh token
+        public string GenerateRefreshToken()
+        {
+            var bytes = RandomNumberGenerator.GetBytes(64);
+            return Convert.ToBase64String(bytes);
+        }
+
+        public string HashRefreshToken(string token)
+        {
+            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+            return Convert.ToHexString(bytes);
         }
     }
 }

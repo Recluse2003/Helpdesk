@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Helpdesk.Api.Features.Auth.Login
 {
-    public record LoginCommand(string Email, string Password) : IRequest<Result<LoginResponse>>;
+    public record LoginCommand(string Email, string Password) : IRequest<Result<LoginResponseDto>>;
 }

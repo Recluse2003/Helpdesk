@@ -2,8 +2,14 @@
 {
     public interface ITokenService
     {
-        GeneratedToken GenerateToken(Guid userId, string email, string displayName, IEnumerable<string> roles);
-    }
+        string GenerateAccessToken(
+            Guid userId,
+            string email,
+            string displayName,
+            IEnumerable<string> roles);
 
-    public record GeneratedToken(string AccessToken, DateTime ExpiresAt);
+        string GenerateRefreshToken();
+
+        string HashRefreshToken(string token);
+    }
 }
