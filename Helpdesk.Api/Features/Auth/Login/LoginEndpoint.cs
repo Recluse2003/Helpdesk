@@ -51,8 +51,8 @@ namespace Helpdesk.Api.Features.Auth.Login
 
             return Results.Ok(new LoginResponse(response.AccessToken));
         }
-
-        public record LoginRequest(string Email, string Password);
-        public record LoginResponse(string AccessToken);
     }
+
+    public record LoginRequest(string Email, string Password);
+    public record LoginResponse(string AccessToken);
 }
