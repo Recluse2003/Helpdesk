@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Helpdesk.Tests.Unit/Features/Auth/Logout/LogoutCommandHandlerTests.cs
+/Helpdesk.Tests.Unit/Features/Auth/Logout/LogoutCommandValidatorTests.cs
+/Helpdesk.Tests.Integration/Features/Auth/LogoutEndpointTests.cs
