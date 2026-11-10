@@ -11,7 +11,9 @@ namespace Helpdesk.Api.Features.Auth.Refresh
         {
             RuleFor(x => x.RefreshToken)
                 .NotEmpty()
-                .WithMessage("A refresh token must be provided.");
+                .WithMessage("A refresh token must be provided.")
+                .MaximumLength(100)
+                .WithMessage("The refresh token exceeds the maximum permitted length.");
         }
     }
 }

@@ -28,6 +28,8 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .WithMessage("A password must be specified.")
             .MinimumLength(8)
             .WithMessage("A password must contain 8 or more characters.")
+            .MaximumLength(128)
+            .WithMessage("A password must contain 128 or less characters.")
             .Matches("[A-Z]")
             .WithMessage("A password must contain at least one uppercase letter.")
             .Matches("[a-z]")

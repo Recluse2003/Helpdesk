@@ -18,8 +18,8 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
                 .WithMessage("The page number can not be lower than 1.");
 
             RuleFor(x => x.PageSize)
-                .GreaterThanOrEqualTo(10)
-                .WithMessage("The page size can not be lower than 10.");
+                .InclusiveBetween(1, 100)
+                .WithMessage("The page size must be between 1 and 100.");
         }
     }
 }

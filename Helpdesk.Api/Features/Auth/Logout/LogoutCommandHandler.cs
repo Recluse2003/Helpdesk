@@ -17,16 +17,13 @@ namespace Helpdesk.Api.Features.Auth.Logout
     public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result>
     {
         private readonly HelpdeskDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenService _tokenService;
 
         public LogoutCommandHandler(
             HelpdeskDbContext dbContext,
-            UserManager<ApplicationUser> userManager,
             ITokenService tokenService)
         {
             _context = dbContext;
-            _userManager = userManager;
             _tokenService = tokenService;
         }
 

@@ -15,7 +15,6 @@ namespace Helpdesk.Tests.Integration.Features.Auth
         [Fact]
         public async Task Register_WithValidRequest_ReturnsNoContent()
         {
-
             // Arrange
             var request = new RegisterRequest(
                 "test test",

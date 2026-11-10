@@ -136,6 +136,22 @@ namespace Helpdesk.Tests.Unit.Features.Auth.Register
         }
 
         [Fact]
+        public void Validate_WithLongPassword_ShouldHaveError()
+        {
+            // Arrange
+            var command = new RegisterCommand(
+                "test test",
+                "test@test.com",
+                new string('a', 126) + "1B!");
+
+            // Act
+            var result = _validator.TestValidate(command);
+
+            // Assert
+            result.ShouldHaveValidationErrorFor(x => x.Password);
+        }
+
+        [Fact]
         public void Validate_WithPasswordMissingUppercase_ShouldHaveError()
         {
             // Arrange

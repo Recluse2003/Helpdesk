@@ -17,7 +17,7 @@ namespace Helpdesk.Api.Features.Tickets.AssignTicket
                 .NotEmpty()
                 .WithMessage("A ticket must be specified");
 
-            RuleFor(x => x.UserId)
+            RuleFor(x => x.AssigneeId)
                 .NotEmpty()
                 .WithMessage("A support agent must be specified.");
         }
