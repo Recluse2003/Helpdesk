@@ -1,4 +1,6 @@
-﻿namespace Helpdesk.Api.Domain.Entities
+﻿using Helpdesk.Api.Domain.Exceptions;
+
+namespace Helpdesk.Api.Domain.Entities
 {
     /// <summary>
     /// Represents a refresh token issued to a specified user for maintaining an authenticated session.
@@ -57,8 +59,6 @@
         /// </summary>
         public bool IsActive => !IsRevoked && !IsExpired;
 
-        private RefreshToken() { }
-
         /// <summary>
         /// Creates a new refresh token.
         /// </summary>
@@ -67,6 +67,15 @@
         /// <param name="expiresAt">The date and time the token expires.</param>
         public RefreshToken(Guid userId, string tokenHash, DateTime expiresAt)
         {
+            if (userId == Guid.Empty)
+                throw new DomainException("A user must be specified.");
+
+            if (string.IsNullOrWhiteSpace(tokenHash))
+                throw new DomainException("A token hash must be provided.");
+
+            if (expiresAt <= DateTime.UtcNow)
+                throw new DomainException("The token expiry must be in the future.");
+
             Id = Guid.NewGuid();
             UserId = userId;
             TokenHash = tokenHash;
