@@ -103,7 +103,7 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalations
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-            PagedList<EscalationRequestDto> result = new(requests, total, pageNumber, pageSize);
+            PagedList<EscalationRequestDto> result = new(requests, pageNumber, pageSize, total);
 
             return result;
         }

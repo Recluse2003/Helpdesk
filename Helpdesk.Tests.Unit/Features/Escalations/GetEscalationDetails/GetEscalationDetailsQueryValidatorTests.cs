@@ -1,7 +1,5 @@
 ﻿using FluentValidation.TestHelper;
-using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Features.Escalations.GetEscalationDetails;
-using Helpdesk.Api.Features.Escalations.GetEscalations;
 
 namespace Helpdesk.Tests.Unit.Features.Escalations.GetEscalationDetails
 {

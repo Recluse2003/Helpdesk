@@ -84,6 +84,18 @@ namespace Helpdesk.Api.Features.Escalations.RequestEscalation
 
             ticket.RequestEscalation(escalationRequest, user.DisplayName, proposedRecipient?.DisplayName);
 
+            _context.ChangeTracker.DetectChanges();
+
+            foreach (var entry in _context.ChangeTracker.Entries())
+            {
+                Console.WriteLine(
+                    $"Entity: {entry.Entity.GetType().Name}, " +
+                    $"State: {entry.State}, " +
+                    $"Key: {entry.Metadata.FindPrimaryKey()?.Properties
+                        .Select(p => entry.Property(p.Name).CurrentValue)
+                        .FirstOrDefault()}");
+            }
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return escalationRequest.Id;

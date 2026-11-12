@@ -366,6 +366,9 @@ namespace Helpdesk.Api.Domain.Entities
             string requesterDisplayName, 
             string? proposedRecipientDisplayName)
         {
+            if (escalationRequest is null)
+                throw new DomainException("An escalation request must be specified.");
+
             if (Status == TicketStatus.Closed)
                 throw new DomainException("Cannot escalate a closed ticket.");
 

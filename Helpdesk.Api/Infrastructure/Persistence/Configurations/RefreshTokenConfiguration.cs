@@ -11,16 +11,19 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(rt => rt.Id);
 
-            builder.Property(x => x.TokenHash)
+            builder.Property(rt => rt.Id)
+                .ValueGeneratedNever();
+
+            builder.Property(rt => rt.TokenHash)
                 .HasMaxLength(64)
                 .IsRequired();
 
-            builder.HasIndex(x => x.TokenHash)
+            builder.HasIndex(rt => rt.TokenHash)
                 .IsUnique();
 
-            builder.HasIndex(x => x.UserId);
+            builder.HasIndex(rt => rt.UserId);
         }
     }
 }

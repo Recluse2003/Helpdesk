@@ -14,6 +14,9 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(tm => tm.Id);
 
+            builder.Property(tm => tm.Id)
+                .ValueGeneratedNever();
+
             builder.Property(tm => tm.Content)
                 .IsRequired()
                 .HasMaxLength(5000);
