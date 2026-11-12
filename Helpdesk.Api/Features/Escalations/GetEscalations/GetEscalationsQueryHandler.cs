@@ -1,9 +1,7 @@
 ﻿using Helpdesk.Api.Domain.Common;
 using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Infrastructure.Persistence;
-using Helpdesk.Api.Infrastructure.Persistence.Models;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Api.Features.Escalations.GetEscalations
@@ -18,12 +16,10 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalations
     public class GetEscalationsQueryHandler : IRequestHandler<GetEscalationsQuery, Result<PagedList<EscalationRequestDto>>>
     {
         private readonly HelpdeskDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public GetEscalationsQueryHandler(HelpdeskDbContext context, UserManager<ApplicationUser> userManager)
+        public GetEscalationsQueryHandler(HelpdeskDbContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -84,7 +80,8 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalations
                 from recipient in recipientGroup.DefaultIfEmpty()
 
                 orderby er.Status == EscalationRequestStatus.Waiting descending,
-                        er.CreatedAt descending
+                        er.CreatedAt descending,
+                        er.Id descending
 
                 select new EscalationRequestDto(
                     er.Id,

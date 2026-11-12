@@ -14,7 +14,7 @@ namespace Helpdesk.Api.Features.Escalations.GetEscalationDetails
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("api/escalation/{id:guid}", Handle)
+            app.MapGet("api/escalations/{id:guid}", Handle)
                 .WithTags("Escalations")
                 .WithName("GetEscalationDetails")
                 .Produces<EscalationRequestDetailsDto>(StatusCodes.Status200OK)

@@ -1,20 +1,15 @@
-﻿
-using FluentAssertions;
+﻿using FluentAssertions;
 using Helpdesk.Api.Domain.Entities;
 using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Features.Escalations.GetEscalations;
 using Helpdesk.Api.Infrastructure.Persistence;
 using Helpdesk.Api.Infrastructure.Persistence.Models;
-using Helpdesk.Tests.Unit.Helpers;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace Helpdesk.Tests.Unit.Features.Escalations.GetEscalations
 {
     public class GetEscalationsQueryHandlerTests : IDisposable
     {
-        private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
         private readonly HelpdeskDbContext _context;
         private readonly GetEscalationsQueryHandler _handler;
 
@@ -26,11 +21,7 @@ namespace Helpdesk.Tests.Unit.Features.Escalations.GetEscalations
 
             _context = new HelpdeskDbContext(options);
 
-            _userManagerMock = IdentityMockFactory.CreateUserManager();
-
-            _handler = new GetEscalationsQueryHandler(
-                _context,
-                _userManagerMock.Object);
+            _handler = new GetEscalationsQueryHandler(_context);
         }
 
         public void Dispose()
