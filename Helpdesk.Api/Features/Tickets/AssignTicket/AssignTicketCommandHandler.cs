@@ -51,7 +51,7 @@ namespace Helpdesk.Api.Features.Tickets.AssignTicket
             ApplicationUser? assignee = await _userManager.FindByIdAsync(command.AssigneeId.ToString());
 
             if (assignee == null)
-                return Error.NotFound("User.NotFound", "Assignee not found.");
+                return Error.NotFound("Ticket.AssigneeNotFound", "Assignee not found.");
 
             bool assigneeIsSupportAgent = await _userManager.IsInRoleAsync(assignee, RoleNames.SupportAgent);
 

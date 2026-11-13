@@ -114,12 +114,12 @@ namespace Helpdesk.Api.Domain.Entities
             AddActivity(activity);
         }
 
-        private void AddMessage(TicketMessage message)
+        public void AddMessage(TicketMessage message)
         {
             _messages.Add(message);
         }
 
-        private void AddActivity(TicketActivity activity)
+        public void AddActivity(TicketActivity activity)
         {
             _activities.Add(activity);
         }

@@ -62,28 +62,37 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
                 .GroupJoin(
                     _context.Users,
                     x => x.ticket.AssignedToId,
-                    user => user.Id,
+                    user => (Guid?)user.Id,
                     (x, users) => new { x.ticket, x.customer, users }
                 )
                 .SelectMany(
                     x => x.users.DefaultIfEmpty(),
-                    (x, assignee) => new QueueTicketDto(
-                        x.ticket.Id,
-                        x.ticket.Title,
-                        x.ticket.Status,
-                        x.ticket.Priority,
-                        x.ticket.CreatedAt,
-                        x.ticket.UpdatedAt,
-                        x.ticket.CreatedById,
-                        x.customer.DisplayName,
-                        x.ticket.AssignedToId,
-                        assignee != null ? assignee.DisplayName : null
-                    )
+                    (x, assignee) => new
+                    {
+                        Ticket = x.ticket,
+                        CustomerDisplayName = x.customer.DisplayName,
+                        AssigneeDisplayName = assignee == null
+                            ? null
+                            : assignee.DisplayName
+                    }
                 )
-                .OrderByDescending(dto => dto.UpdatedAt)
-                .ThenBy(dto => dto.Id)
+                // Order using entity properties before constructing the DTO.
+                .OrderByDescending(x => x.Ticket.UpdatedAt)
+                .ThenBy(x => x.Ticket.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .Select(x => new QueueTicketDto(
+                    x.Ticket.Id,
+                    x.Ticket.Title,
+                    x.Ticket.Status,
+                    x.Ticket.Priority,
+                    x.Ticket.CreatedAt,
+                    x.Ticket.UpdatedAt,
+                    x.Ticket.CreatedById,
+                    x.CustomerDisplayName,
+                    x.Ticket.AssignedToId,
+                    x.AssigneeDisplayName
+                ))
                 .ToListAsync(cancellationToken);
 
             PagedList<QueueTicketDto> result = new(tickets, pageNumber, pageSize, total);

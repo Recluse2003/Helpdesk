@@ -45,11 +45,11 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
     }
 
     public record GetSupportQueueRequest(
-        int PageNumber,
-        int PageSize,
-        TicketStatus? Status,
-        TicketPriority? Priority,
-        Guid? CustomerId,
-        Guid? AssigneeId
-    );
+        int PageNumber = 1,
+        int PageSize = 10,
+        TicketStatus? Status = null,
+        TicketPriority? Priority = null,
+        Guid? CustomerId = null,
+        Guid? AssigneeId = null);
+    
 }

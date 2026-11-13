@@ -99,7 +99,7 @@ public class AddTicketMessageCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Id.Should().Be("Ticket.NotFound");
+        result.Error!.Id.Should().Be("Ticket.NotFound");
 
         _userManagerMock.Verify(
             x => x.FindByIdAsync(It.IsAny<string>()),
@@ -157,7 +157,7 @@ public class AddTicketMessageCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Id.Should().Be("User.NotFound");
+        result.Error!.Id.Should().Be("User.NotFound");
 
         ticket.Messages.Should().BeEmpty();
     }
@@ -183,7 +183,7 @@ public class AddTicketMessageCommandHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Id.Should().Be("Ticket.InternalNoteForbidden");
+        result.Error!.Id.Should().Be("Ticket.InternalNoteForbidden");
 
         ticket.Messages.Should().BeEmpty();
     }
