@@ -282,19 +282,21 @@ namespace Helpdesk.Api.Domain.Entities
         /// </summary>
         /// <param name="content">The content of the internal note.</param>
         /// <param name="authorId">The unique identifier of the user authoring the note.</param>
+        /// <param name="isAdministrator">Whether the author is an administrator.</param>
         /// <exception cref="DomainException">
-        /// Thrown when the author identifier is invalid or the author is not the currently assigned support agent.
+        /// Thrown when the author identifier is invalid or the author is not the currently assigned support 
+        /// agent or an administrator.
         /// </exception>
         /// <remarks>
         /// Used by support agents and administrators to add internal notes to ticket, not visible to the customer. 
         /// </remarks>
-        public void AddInternalNote(string content, Guid authorId)
+        public void AddInternalNote(string content, Guid authorId, bool isAdministrator = false)
         {
             if (authorId == Guid.Empty)
                 throw new DomainException("A valid user ID must be specified to add a public message");
 
-            if (authorId != AssignedToId)
-                throw new DomainException("A internal note can not be added to a ticket, unless they are the assigned support agent.");
+            if (!isAdministrator && authorId != AssignedToId)
+                throw new DomainException("Only the assigned support agent or an administrator can add an internal note.");
 
             var message = new TicketMessage(Id, content, authorId, isPublic: false);
             AddMessage(message);

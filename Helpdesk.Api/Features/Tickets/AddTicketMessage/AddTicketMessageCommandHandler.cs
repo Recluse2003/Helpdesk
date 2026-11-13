@@ -1,7 +1,9 @@
 ﻿using Helpdesk.Api.Domain.Common;
 using Helpdesk.Api.Domain.Entities;
 using Helpdesk.Api.Infrastructure.Persistence;
+using Helpdesk.Api.Infrastructure.Persistence.Models;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
@@ -16,10 +18,12 @@ namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
     public class AddTicketMessageCommandHandler : IRequestHandler<AddTicketMessageCommand, Result>
     {
         private readonly HelpdeskDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AddTicketMessageCommandHandler(HelpdeskDbContext context)
+        public AddTicketMessageCommandHandler(HelpdeskDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -39,11 +43,29 @@ namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
             if (ticket == null)
                 return Error.NotFound("Ticket.NotFound", "Specified ticket not found.");
 
-            // If the message is private, delegates it to the add internal note method, else makes a public message.
             if (command.IsPublic)
+            {
                 ticket.AddPublicMessage(command.Content, command.UserId);
+            }
             else
-                ticket.AddInternalNote(command.Content, command.UserId);
+            {
+                ApplicationUser? user = await _userManager.FindByIdAsync(command.UserId.ToString());
+
+                if (user == null)
+                    return Error.NotFound("User.NotFound", "User not found.");
+
+                bool isSupportAgent = await _userManager.IsInRoleAsync(user, RoleNames.SupportAgent);
+
+                bool isAdministrator = await _userManager.IsInRoleAsync(user, RoleNames.Administrator);
+
+                if (!isSupportAgent && !isAdministrator)
+                    return Error.Forbidden("Ticket.InternalNoteForbidden", "Only support agents and administrators can add internal notes.");
+
+                ticket.AddInternalNote(
+                    command.Content,
+                    command.UserId,
+                    isAdministrator);
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 

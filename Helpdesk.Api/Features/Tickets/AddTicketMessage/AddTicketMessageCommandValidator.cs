@@ -22,10 +22,6 @@ namespace Helpdesk.Api.Features.Tickets.AddTicketMessage
                 .WithMessage("A ticket message requires text.")
                 .MaximumLength(5000)
                 .WithMessage("A ticket message cannot exceed 5000 characters.");
-
-            RuleFor(x => x.IsPublic) 
-                .NotEmpty()
-                .WithMessage("A ticket message must state its privacy level.");
         }
     }
 }
