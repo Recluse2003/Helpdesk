@@ -310,8 +310,7 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
             responseBody!.EscalationRequestId.Should().NotBeEmpty();
 
             response.Headers.Location.Should().NotBeNull();
-            response.Headers.Location!.ToString()
-                .Should().Be($"/api/escalations/{responseBody.EscalationRequestId}");
+            response.Headers.Location!.ToString().Should().Be($"/api/escalations/{responseBody.EscalationRequestId}");
 
             using var scope = Factory.Services.CreateScope();
 

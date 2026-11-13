@@ -1,22 +1,14 @@
 ﻿using FluentAssertions;
 using Helpdesk.Api.Domain.Enums;
-using Helpdesk.Api.Features.Escalations.RequestEscalation;
 using Helpdesk.Api.Features.Tickets.CreateTicket;
 using Helpdesk.Api.Infrastructure.Persistence;
-using Helpdesk.Api.Infrastructure.Persistence.Models;
-using Helpdesk.Tests.Unit.Helpers;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Helpdesk.Tests.Unit.Features.Tickets.CreateTicket
 {
     public class CreateTicketCommandHandlerTests : IDisposable
     {
-        private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
         private readonly HelpdeskDbContext _context;
         private readonly CreateTicketCommandHandler _handler;
 
@@ -27,8 +19,6 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.CreateTicket
                 .Options;
 
             _context = new HelpdeskDbContext(options);
-
-            _userManagerMock = IdentityMockFactory.CreateUserManager();
 
             _handler = new CreateTicketCommandHandler(
                 _context);

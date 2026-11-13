@@ -126,12 +126,12 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
 
             var context = scope.ServiceProvider.GetRequiredService<HelpdeskDbContext>();
 
-            var savedRequest = await context.Tickets.SingleAsync(x => x.Id == responseBody!.TicketId);
+            var savedTicket = await context.Tickets.SingleAsync(x => x.Id == responseBody!.TicketId);
 
-            savedRequest.Id.Should().Be(responseBody!.TicketId);
-            savedRequest.Title.Should().Be("Ticket title");
-            savedRequest.Description.Should().Be("Ticket description.");
-            savedRequest.Priority.Should().Be(TicketPriority.Medium);
+            savedTicket.Id.Should().Be(responseBody!.TicketId);
+            savedTicket.Title.Should().Be("Ticket title");
+            savedTicket.Description.Should().Be("Ticket description.");
+            savedTicket.Priority.Should().Be(TicketPriority.Medium);
         }
     }
 }
