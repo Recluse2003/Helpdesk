@@ -82,12 +82,16 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
+        private async Task<HttpResponseMessage> GetTicketDetailsAsync(Guid ticketId)
+        {
+            return await Client.GetAsync($"/api/tickets/{ticketId}");
+        }
+
         [Fact]
         public async Task GetTicketDetails_WhenUnauthenticated_ReturnsUnauthorized()
         {
             // Act
-            var response = await Client.GetAsync(
-                $"/api/tickets/{Guid.NewGuid()}");
+            var response = await GetTicketDetailsAsync(Guid.NewGuid());
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -107,8 +111,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                $"/api/tickets/{ticket.Id}");
+            var response = await GetTicketDetailsAsync(ticket.Id);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -132,8 +135,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                $"/api/tickets/{ticket.Id}");
+            var response = await GetTicketDetailsAsync(ticket.Id);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -151,8 +153,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                $"/api/tickets/{Guid.NewGuid()}");
+            var response = await GetTicketDetailsAsync(Guid.NewGuid());
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -176,8 +177,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                $"/api/tickets/{ticket.Id}");
+            var response = await GetTicketDetailsAsync(ticket.Id);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -201,8 +201,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                $"/api/tickets/{ticket.Id}");
+            var response = await GetTicketDetailsAsync(ticket.Id);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -222,8 +221,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                $"/api/tickets/{ticket.Id}");
+            var response = await GetTicketDetailsAsync(ticket.Id);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

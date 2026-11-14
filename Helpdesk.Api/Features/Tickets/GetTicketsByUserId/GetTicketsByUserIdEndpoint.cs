@@ -14,7 +14,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("api/users/me/tickets", Handle)
+            app.MapGet("/api/tickets/me", Handle)
                 .WithTags("Tickets")
                 .WithName("GetMyTickets")
                 .Produces<PagedList<TicketSummaryDto>>(StatusCodes.Status200OK)

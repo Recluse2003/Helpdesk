@@ -22,7 +22,7 @@ namespace Helpdesk.Api.Features.Auth.ResetPassword
         }
 
         private static async Task<IResult> Handle(
-            [AsParameters] ResetPasswordRequest request,
+            [FromBody] ResetPasswordRequest request,
             [FromServices] ISender sender,
             CancellationToken cancellationToken)
         {

@@ -14,7 +14,7 @@ namespace Helpdesk.Tests.Integration.Features.Auth
         {
         }
 
-        private async Task<ApplicationUser> CreateUserAsync(string displayName, string role)
+        private async Task<ApplicationUser> CreateUserAsync(string displayName, string role, bool emailConfirmed = false)
         {
             using var scope = Factory.Services.CreateScope();
 
@@ -25,7 +25,7 @@ namespace Helpdesk.Tests.Integration.Features.Auth
                 UserName = $"user-{Guid.NewGuid()}@example.com",
                 Email = $"user-{Guid.NewGuid()}@example.com",
                 DisplayName = displayName,
-                EmailConfirmed = false
+                EmailConfirmed = emailConfirmed
             };
 
             var result = await userManager.CreateAsync(user, "Password123!");
@@ -70,20 +70,7 @@ namespace Helpdesk.Tests.Integration.Features.Auth
         public async Task ConfirmEmail_WhenEmailAlreadyConfirmed_ReturnsConflict()
         {
             // Arrange
-            var user = await CreateUserAsync("Test Customer", "Customer");
-
-            using var scope = Factory.Services.CreateScope();
-
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-            var trackedUser = await userManager.FindByIdAsync(user.Id.ToString());
-
-            trackedUser.Should().NotBeNull();
-
-            trackedUser!.EmailConfirmed = true;
-
-            var updateResult = await userManager.UpdateAsync(trackedUser);
-            updateResult.Succeeded.Should().BeTrue();
+            var user = await CreateUserAsync("Test Customer", "Customer", true);
 
             // Act
             var response = await Client.PostAsync(

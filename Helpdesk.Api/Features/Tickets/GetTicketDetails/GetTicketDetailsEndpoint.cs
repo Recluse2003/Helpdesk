@@ -13,7 +13,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketDetails
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("api/tickets/{ticketId:guid}", Handle) 
+            app.MapGet("/api/tickets/{ticketId:guid}", Handle) 
                 .WithTags("Tickets")
                 .WithName("GetTicketDetails")
                 .Produces<TicketDetailsDto>(StatusCodes.Status200OK)

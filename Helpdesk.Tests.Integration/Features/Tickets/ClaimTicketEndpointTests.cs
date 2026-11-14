@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace Helpdesk.Tests.Integration.Features.Tickets
 {
@@ -82,6 +83,13 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
+        private async Task<HttpResponseMessage> ClaimTicketAsync(Guid ticketId)
+        {
+            return await Client.PostAsync(
+                $"/api/tickets/{ticketId}/claim",
+                null);
+        }
+
         [Fact]
         public async Task RequestEscalation_WhenUserIsNotAuthenticated_ReturnsUnauthorized()
         {
@@ -89,7 +97,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Client.DefaultRequestHeaders.Authorization = null;
 
             // Act
-            var response = await Client.PostAsync($"/api/tickets/{Guid.NewGuid()}/claim", null);
+            var response = await ClaimTicketAsync(Guid.NewGuid());
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -107,7 +115,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.PostAsync($"/api/tickets/{Guid.NewGuid()}/claim", null);
+            var response = await ClaimTicketAsync(Guid.NewGuid());
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -125,7 +133,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.PostAsync($"/api/tickets/{Guid.NewGuid()}/claim", null);
+            var response = await ClaimTicketAsync(Guid.NewGuid());
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -150,9 +158,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.PostAsync(
-                $"/api/tickets/{ticketToClaim.Id}/claim",
-                null);
+            var response = await ClaimTicketAsync(ticketToClaim.Id);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

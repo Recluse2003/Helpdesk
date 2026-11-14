@@ -8,10 +8,8 @@ namespace Helpdesk.Api.Features.Auth.Logout
     public class LogoutCommandValidator : AbstractValidator<LogoutCommand>
     {
         public LogoutCommandValidator() 
-        { 
-            RuleFor(x => x.RefreshToken)
-                .NotEmpty()
-                .WithMessage("A refresh token must be provided.");
+        {
+            RuleFor(x => x.RefreshToken);
         }
     }
 }

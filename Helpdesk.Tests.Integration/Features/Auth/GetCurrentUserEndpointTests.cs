@@ -97,7 +97,6 @@ namespace Helpdesk.Tests.Integration.Features.Auth
             json.RootElement.GetProperty("email").GetString().Should().Be(user.Email);
             json.RootElement.GetProperty("displayName").GetString().Should().Be(user.DisplayName);
 
-
             var roles = json.RootElement.GetProperty("roles");
 
             roles.GetArrayLength().Should().Be(1);

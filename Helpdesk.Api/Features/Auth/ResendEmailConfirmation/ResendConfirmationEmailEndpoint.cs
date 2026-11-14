@@ -16,9 +16,7 @@ namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
                 .WithTags("Authentication")
                 .WithName("ResendConfirmationEmail")
                 .Produces(StatusCodes.Status204NoContent)
-                .ProducesProblem(StatusCodes.Status400BadRequest)
-                .ProducesProblem(StatusCodes.Status404NotFound)
-                .ProducesProblem(StatusCodes.Status409Conflict);
+                .ProducesProblem(StatusCodes.Status400BadRequest);
         }
 
         private static async Task<IResult> Handle(

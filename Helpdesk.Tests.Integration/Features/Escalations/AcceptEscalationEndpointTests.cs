@@ -114,20 +114,25 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
+        private async Task<HttpResponseMessage> AcceptEscalationAsync(Guid ticketId, Guid newSupportAgentId, string responseReason)
+        {
+            return await Client.PostAsJsonAsync(
+                $"/api/escalations/{ticketId}/accept",
+                new
+                {
+                    NewSupportAgentId = newSupportAgentId,
+                    responseReason = responseReason
+                });
+        }
+
         [Fact]
         public async Task AcceptEscalation_WhenUserIsNotAuthenticated_ReturnsUnauthorized()
         {
             // Arrange
             Client.DefaultRequestHeaders.Authorization = null;
 
-            var request = new AcceptEscalationRequest(
-                Guid.NewGuid(),
-                "Response Reason.");
-
             // Act
-            var response = await Client.PostAsJsonAsync(
-                $"/api/escalations/{Guid.NewGuid()}/accept",
-                request);
+            var response = await AcceptEscalationAsync(Guid.NewGuid(), Guid.NewGuid(), "Response Reason.");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -144,14 +149,8 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
             var token = await GenerateAccessTokenAsync(customer);
             Authenticate(token);
 
-            var request = new AcceptEscalationRequest(
-                Guid.NewGuid(),
-                "Response Reason.");
-
             // Act
-            var response = await Client.PostAsJsonAsync(
-                $"/api/escalations/{Guid.NewGuid()}/accept",
-                request);
+            var response = await AcceptEscalationAsync(Guid.NewGuid(), Guid.NewGuid(), "Response Reason.");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -169,14 +168,8 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
             
             Authenticate(token);
 
-            var request = new AcceptEscalationRequest(
-                Guid.NewGuid(),
-                "Response Reason.");
-
             // Act
-            var response = await Client.PostAsJsonAsync(
-                $"/api/escalations/{Guid.NewGuid()}/accept",
-                request);
+            var response = await AcceptEscalationAsync(Guid.NewGuid(), Guid.NewGuid(), "Response Reason.");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -203,14 +196,8 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
                 ticket.Id,
                 requester.Id);
 
-            var request = new AcceptEscalationRequest(
-                Guid.NewGuid(),
-                "Escalation accepted.");
-
             // Act
-            var response = await Client.PostAsJsonAsync(
-                $"/api/escalations/{escalationRequest.Id}/accept",
-                request);
+            var response = await AcceptEscalationAsync(escalationRequest.Id, Guid.NewGuid(), "Response Reason.");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -241,14 +228,8 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
                 ticket.Id,
                 requester.Id);
 
-            var request = new AcceptEscalationRequest(
-                customer.Id,
-                "Response Reason.");
-
             // Act
-            var response = await Client.PostAsJsonAsync(
-                $"/api/escalations/{escalationRequest.Id}/accept",
-                request);
+            var response = await AcceptEscalationAsync(escalationRequest.Id, customer.Id, "Response Reason.");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -283,8 +264,7 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
             {
                 var context = scope.ServiceProvider.GetRequiredService<HelpdeskDbContext>();
 
-                var storedRequest = await context.EscalationRequests
-                    .SingleAsync(x => x.Id == escalationRequest.Id);
+                var storedRequest = await context.EscalationRequests.SingleAsync(x => x.Id == escalationRequest.Id);
 
                 storedRequest.Accept(
                     administrator.Id,
@@ -294,14 +274,8 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
                 await context.SaveChangesAsync();
             }
 
-            var request = new AcceptEscalationRequest(
-                newAgent.Id,
-                "Attempt to accept it again.");
-
             // Act
-            var response = await Client.PostAsJsonAsync(
-                $"/api/escalations/{escalationRequest.Id}/accept",
-                request);
+            var response = await AcceptEscalationAsync(escalationRequest.Id, newAgent.Id, "Attempt to accept it again.");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -334,14 +308,8 @@ namespace Helpdesk.Tests.Integration.Features.Escalations
 
             var responseReason = "This ticket requires specialist knowledge.";
 
-            var request = new AcceptEscalationRequest(
-                newAgent.Id,
-                responseReason);
-
             // Act
-            var response = await Client.PostAsJsonAsync(
-                $"/api/escalations/{escalationRequest.Id}/accept",
-                request);
+            var response = await AcceptEscalationAsync(escalationRequest.Id, newAgent.Id, responseReason);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

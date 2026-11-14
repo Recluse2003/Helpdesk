@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Helpdesk.Tests.Integration.Features.Tickets.AssignTicket
+namespace Helpdesk.Tests.Integration.Features.Tickets
 {
     public class AssignTicketEndpointTests : IntegrationTestBase
     {

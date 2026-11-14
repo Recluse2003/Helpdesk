@@ -41,11 +41,8 @@ namespace Helpdesk.Api.Features.Auth.ResendEmailConfirmation
         {
             var user = await _userManager.FindByEmailAsync(command.Email);
 
-            if (user == null)
-                return Error.NotFound("User.NotFound", "User not found.");
-
-            if (user.EmailConfirmed)
-                return Error.Conflict("Auth.EmailAlreadyConfirmed", "This email address has already been confirmed.");
+            if (user == null || user.EmailConfirmed)
+                return Result.Success();
 
             var userId = await _userManager.GetUserIdAsync(user);
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

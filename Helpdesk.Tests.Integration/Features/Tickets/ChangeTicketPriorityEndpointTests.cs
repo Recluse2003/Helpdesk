@@ -91,9 +91,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets.ChangeTicketPriority
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
-        private async Task<HttpResponseMessage> ChangePriorityAsync(
-            Guid ticketId,
-            TicketPriority priority)
+        private async Task<HttpResponseMessage> ChangePriorityAsync(Guid ticketId, TicketPriority priority)
         {
             return await Client.PatchAsJsonAsync(
                 $"/api/tickets/{ticketId}/priority",

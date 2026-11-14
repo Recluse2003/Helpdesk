@@ -1,5 +1,6 @@
 ﻿using Helpdesk.Api.Features.Auth.Login;
 using Helpdesk.Api.Shared.Extensions;
+using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,7 @@ namespace Helpdesk.Api.Features.Auth.Logout
     /// <summary>
     /// Defines the HTTP endpoint responsible for logging out the current user. 
     /// </summary>
-    public class LogoutEndpoint
+    public class LogoutEndpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
@@ -16,7 +17,7 @@ namespace Helpdesk.Api.Features.Auth.Logout
                 .WithTags("Authentication")
                 .WithName("Logout")
                 .AllowAnonymous()
-                .Produces<LoginResponseDto>(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status204NoContent)
                 .ProducesProblem(StatusCodes.Status400BadRequest);
         }
 

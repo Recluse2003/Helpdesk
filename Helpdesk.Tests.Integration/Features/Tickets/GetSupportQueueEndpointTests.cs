@@ -305,8 +305,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await GetSupportQueueAsync(
-                $"?Priority={(int)TicketPriority.High}");
+            var response = await GetSupportQueueAsync($"?Priority={(int)TicketPriority.High}");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

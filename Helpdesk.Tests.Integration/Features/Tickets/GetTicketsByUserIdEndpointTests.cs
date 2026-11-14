@@ -8,12 +8,9 @@ using Helpdesk.Api.Infrastructure.Persistence.Models;
 using Helpdesk.Api.Shared.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace Helpdesk.Tests.Integration.Features.Tickets
 {
@@ -61,17 +58,20 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
                 roles);
         }
 
-        private async Task<Ticket> CreateTicketAsync(Guid creatorId)
+        private async Task<Ticket> CreateTicketAsync(Guid creatorId, Guid? agentId = null)
         {
             using var scope = Factory.Services.CreateScope();
 
             var context = scope.ServiceProvider.GetRequiredService<HelpdeskDbContext>();
 
             var ticket = new Ticket(
-                "Test ticket",
-                "A test ticket description.",
+                "Ticket title",
+                "Ticket description",
                 creatorId,
                 TicketPriority.Medium);
+
+            if (agentId.HasValue)
+                ticket.Claim((Guid)agentId, "User Id");
 
             context.Tickets.Add(ticket);
 
@@ -85,19 +85,16 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
-        private sealed record PagedListResponse<T>(
-            IReadOnlyList<T> Items,
-            int PageNumber,
-            int PageSize,
-            int TotalCount,
-            int TotalPages);
+        private async Task<HttpResponseMessage> GetTicketsByUserIdAsync(string query = "")
+        {
+            return await Client.GetAsync($"/api/tickets/me{query}");
+        }
 
         [Fact]
         public async Task GetMyTickets_WhenUnauthenticated_ReturnsUnauthorized()
         {
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=1&pageSize=10");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -115,8 +112,7 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=1&pageSize=10");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -134,13 +130,12 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=1&pageSize=10");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedListResponse<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
 
             result.Should().NotBeNull();
             result!.Items.Should().BeEmpty();
@@ -166,13 +161,12 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=1&pageSize=10");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedListResponse<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
 
             result.Should().NotBeNull();
             result!.Items.Should().ContainSingle();
@@ -194,13 +188,12 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=1&pageSize=10");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedListResponse<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
 
             result.Should().NotBeNull();
 
@@ -221,22 +214,18 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
                 "Support Agent",
                 RoleNames.SupportAgent);
 
-            var ticket = await CreateTicketAsync(customer.Id);
-
-            // Assign using your existing ticket helper or scoped DbContext.
-            await AssignTicketAsync(ticket.Id, agent.Id);
+            var ticket = await CreateTicketAsync(customer.Id, agent.Id);
 
             var token = await GenerateAccessTokenAsync(customer);
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=1&pageSize=10");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedListResponse<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
 
             result.Should().NotBeNull();
 
@@ -262,13 +251,12 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=1&pageSize=2");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=2");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedListResponse<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
 
             result.Should().NotBeNull();
             result!.Items.Should().HaveCount(2);
@@ -294,37 +282,17 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Authenticate(token);
 
             // Act
-            var response = await Client.GetAsync(
-                "/api/users/me/tickets?pageNumber=2&pageSize=2");
+            var response = await GetTicketsByUserIdAsync("?pageNumber=2&pageSize=2");
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedListResponse<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
 
             result.Should().NotBeNull();
             result!.Items.Should().HaveCount(2);
             result.PageNumber.Should().Be(2);
             result.TotalCount.Should().Be(5);
-        }
-
-        private async Task AssignTicketAsync(Guid ticketId, Guid agentId)
-        {
-            using var scope = Factory.Services.CreateScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<HelpdeskDbContext>();
-
-            var ticket = await context.Tickets.FindAsync(ticketId);
-
-            ticket.Should().NotBeNull();
-
-            var agent = await context.Users.FindAsync(agentId);
-
-            agent.Should().NotBeNull();
-
-            ticket!.Claim(agentId, agent!.DisplayName);
-
-            await context.SaveChangesAsync();
         }
     }
 }

@@ -64,16 +64,26 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
+        private async Task<HttpResponseMessage> CreateTicketAsync(string title, string description, TicketPriority priority)
+        {
+            return await Client.PostAsJsonAsync(
+                "api/tickets/",
+                new
+                {
+                    Title = title, 
+                    Description = description,
+                    Priority = priority
+                });
+        }
+
         [Fact]
         public async Task CreateTicket_WhenUserIsNotAuthenticated_ReturnsUnauthorized()
         {
             // Arrange
             Client.DefaultRequestHeaders.Authorization = null;
 
-            var request = new CreateTicketRequest("Ticket title", "Ticket description.", TicketPriority.Medium);
-
             // Act
-            var response = await Client.PostAsJsonAsync("api/tickets/", request);
+            var response = await CreateTicketAsync("Ticket title", "Ticket description.", TicketPriority.Medium);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -90,10 +100,8 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             var token = await GenerateAccessTokenAsync(supportAgent);
             Authenticate(token);
 
-            var request = new CreateTicketRequest("Ticket title", "Ticket description.", TicketPriority.Medium);
-
             // Act
-            var response = await Client.PostAsJsonAsync("api/tickets/", request);
+            var response = await CreateTicketAsync("Ticket title", "Ticket description.", TicketPriority.Medium);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -110,10 +118,8 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             var token = await GenerateAccessTokenAsync(customer);
             Authenticate(token);
 
-            var request = new CreateTicketRequest("Ticket title", "Ticket description.", TicketPriority.Medium);
-
             // Act
-            var response = await Client.PostAsJsonAsync("api/tickets/", request);
+            var response = await CreateTicketAsync("Ticket title", "Ticket description.", TicketPriority.Medium);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
