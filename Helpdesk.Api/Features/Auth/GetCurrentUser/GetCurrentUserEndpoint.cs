@@ -1,6 +1,4 @@
-﻿using Helpdesk.Api.Domain.Common;
-using Helpdesk.Api.Features.Tickets.GetSupportQueue;
-using Helpdesk.Api.Shared.Extensions;
+﻿using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +13,7 @@ namespace Helpdesk.Api.Features.Auth.GetCurrentUser
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("/api/users/me", Handle)
+            app.MapGet("/api/auth/me", Handle)
                 .WithTags("Authentication")
                 .WithName("CurrentUser")
                 .Produces<GetCurrentUserResponse>(StatusCodes.Status200OK)
@@ -41,4 +39,17 @@ namespace Helpdesk.Api.Features.Auth.GetCurrentUser
             return result.ToHttpResult();
         }
     }
+
+    /// <summary>
+    /// Represents the response for a <see cref="GetCurrentUserQuery"/>.
+    /// </summary>
+    /// <param name="Id">Unique identifier of the current user.</param>
+    /// <param name="Email">Email address of the current user.</param>
+    /// <param name="DisplayName">Display name of the current user.</param>
+    /// <param name="Roles">Roles of the current user.</param>
+    public record GetCurrentUserResponse(
+        Guid Id,
+        string Email,
+        string DisplayName,
+        IReadOnlyList<string> Roles);
 }
