@@ -1,0 +1,48 @@
+import axios from "axios";
+
+export interface ApiProblemDetails {
+  title?: string;
+  status?: number;
+  detail?: string;
+  errors?: Record<string, string[]>;
+}
+
+export interface ParsedApiError {
+  generalError: string | null;
+  fieldErrors: Record<string, string[]>;
+}
+
+export function parseApiError(error: unknown): ParsedApiError {
+  // Check if the error came from Axios with a server response
+  if (axios.isAxiosError<ApiProblemDetails>(error) && error.response?.data) {
+    const data = error.response.data;
+
+    // Handles ValidationProblemDetails errors
+    if (data.errors) {
+      // Normalise keys to lowercase so "Email" and "email" both match
+      const normalisedErrors: Record<string, string[]> = {};
+      for (const [key, messages] of Object.entries(data.errors)) {
+        normalisedErrors[key.toLowerCase()] = messages;
+      }
+
+      return {
+        generalError: null,
+        fieldErrors: normalisedErrors,
+      };
+    }
+
+    // Handles ProblemDetails errors (e.g. InvalidCredentials, EmailNotConfirmed)
+    if (data.detail) {
+      return {
+        generalError: data.detail,
+        fieldErrors: {},
+      };
+    }
+  }
+
+  // Deals with unexpected errors
+  return {
+    generalError: "Something went wrong. Please try again later.",
+    fieldErrors: {},
+  };
+}

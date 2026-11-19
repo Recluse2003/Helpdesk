@@ -6,7 +6,7 @@ namespace Helpdesk.Api.Infrastructure.Middleware
 {
     /// <summary>
     /// Handles unhandled FluentValidation exceptions and converts them into HTTP validation responses. 
-    /// TODO: Other exceptions to be expected in general use are be added to the handler later. 
+    /// TODO: Other exceptions to be expected in general use are be added to be the handler later. 
     /// </summary>
     /// <remarks>
     /// Validation errors are grouped by property name and returned using <see cref="ValidationProblemDetails"/> to provide 

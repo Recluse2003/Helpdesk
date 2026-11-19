@@ -1,0 +1,18 @@
+.layout {
+  min-height: 100vh;
+}
+
+/* Desktop: navbar on the left */
+.content {
+  margin-left: var(--navbar-width);
+  padding: 0 1.5rem;
+  min-height: 100vh;
+}
+
+/* Smaller screens: navbar across the top */
+@media (max-width: 1256px) {
+  .content {
+    margin-left: 0;
+    padding-top: calc(var(--navbar-height) + 0.5rem);
+  }
+}

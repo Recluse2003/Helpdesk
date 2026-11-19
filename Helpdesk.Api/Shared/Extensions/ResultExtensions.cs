@@ -77,6 +77,7 @@ namespace Helpdesk.Api.Shared.Extensions
         {
             var statusCode = error.Type switch
             {
+                ErrorType.Failure => StatusCodes.Status400BadRequest,
                 ErrorType.Validation => StatusCodes.Status400BadRequest,
                 ErrorType.NotFound => StatusCodes.Status404NotFound,
                 ErrorType.Conflict => StatusCodes.Status409Conflict,

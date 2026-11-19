@@ -1,0 +1,162 @@
+
+.container {
+    position: relative;
+    width: 100%;
+    background-color: var(--bg-nav);
+}
+
+.profileButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    width: 100%;
+    padding: 0.75rem;
+
+    background-color: var(--bg-nav);
+    border: none;
+    border-radius: 6px;
+
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+.profileButton:hover {
+    background-color: var(--bg-nav);
+}
+
+.profileButton span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.rotated {
+    transform: rotate(180deg);
+}
+
+
+.dropdown {
+    position: absolute;
+    left: calc(100% + 8px);
+    bottom: 0;
+
+    width: 220px;
+
+    background-color: var(--bg-nav);
+    color: var(--text-muted);
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    z-index: 200;
+    overflow: hidden;
+}
+
+
+.dropdownHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    padding: 1rem;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.dropdownHeader strong {
+    font-size: 0.95rem;
+}
+
+.dropdownHeader span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
+
+
+.dropdownLinks {
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem;
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    width: 100%;
+    padding: 0.3rem;
+
+    color: var(--text);
+    text-decoration: none;
+
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+    background-color: var(--bg-nav-hover);
+}
+
+
+.dropdownFooter {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.4rem;
+    border-top: 1px solid var(--border);
+}
+
+.logoutButton {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    color: var(--error);
+}
+
+.logoutButton:hover {
+    background-color: rgba(220, 85, 85, 0.1);
+}
+
+/* Horizontal navbar */
+
+@media (max-width: 1256px) {
+  .container {
+    width: auto;
+    height: 100%;
+  }
+
+  .profileButton {
+    width: auto;
+    height: 100%;
+  }
+
+  .dropdown {
+    left: auto;
+    right: 0;
+    top: calc(100% + 8px);
+    bottom: auto;
+  }
+}

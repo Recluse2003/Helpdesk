@@ -1,9 +1,6 @@
 ﻿using Helpdesk.Api.Infrastructure.Configuration;
 using Helpdesk.Api.Shared.Interfaces;
 using MailKit.Net.Smtp;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
@@ -63,4 +60,3 @@ namespace Helpdesk.Api.Infrastructure.Services
         }
     }
 }
-
