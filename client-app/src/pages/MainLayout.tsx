@@ -4,43 +4,70 @@ import Sidebar from "../components/Sidebar/Sidebar";
 import Navbar from "../components/Navbar/Navbar";
 import styles from "./MainLayout.module.css";
 
-export default function MainLayout() {
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 1024);
+type Viewport = "desktop" | "tablet" | "mobile";
 
-  const [sidebarOpen, setSidebarOpen] = useState(
-    () => window.innerWidth > 1024,
-  );
+function getViewport(): Viewport {
+  if (window.innerWidth < 768) return "mobile";
+  if (window.innerWidth < 1200) return "tablet";
+  return "desktop";
+}
+
+export default function MainLayout() {
+  const [viewport, setViewport] = useState<Viewport>(getViewport);
+
+  const [desktopExpanded, setDesktopExpanded] = useState(true);
+  const [tabletExpanded, setTabletExpanded] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 1024;
-
-      setIsMobile(mobile);
-      setSidebarOpen(!mobile);
+      setViewport(getViewport());
     };
 
     window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const closeSidebar = () => setSidebarOpen(false);
+  const handleMenuClick = () => {
+    if (viewport === "desktop") {
+      setDesktopExpanded((prev) => !prev);
+    } else if (viewport === "tablet") {
+      setTabletExpanded((prev) => !prev);
+    } else {
+      setMobileOpen((prev) => !prev);
+    }
+  };
+
+  const isMobile = viewport === "mobile";
+
+  const isExpanded =
+    viewport === "desktop"
+      ? desktopExpanded
+      : viewport === "tablet"
+        ? tabletExpanded
+        : true;
+
+  const isSidebarVisible = !isMobile || mobileOpen;
+
+  const layoutClass = isMobile
+    ? styles.mobile
+    : isExpanded
+      ? styles.sidebarExpanded
+      : styles.sidebarCompact;
 
   return (
-    <div
-      className={`${styles.layout} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}
-    >
+    <div className={`${styles.layout} ${layoutClass}`}>
       <Navbar
-        onMenuClick={() => setSidebarOpen((prev) => !prev)}
-        isOpen={sidebarOpen}
+        onMenuClick={handleMenuClick}
+        isOpen={isMobile ? mobileOpen : isExpanded}
       />
 
       <Sidebar
-        isOpen={sidebarOpen}
-        onClose={closeSidebar}
+        isOpen={isSidebarVisible}
+        isExpanded={isExpanded}
         isMobile={isMobile}
+        onClose={() => setMobileOpen(false)}
       />
 
       <main className={styles.mainContent}>

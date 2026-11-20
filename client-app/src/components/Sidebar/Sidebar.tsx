@@ -15,11 +15,17 @@ import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
   isOpen: boolean;
-  onClose: () => void;
+  isExpanded: boolean;
   isMobile: boolean;
+  onClose: () => void;
 }
 
-export default function Sidebar({ isOpen, onClose, isMobile }: SidebarProps) {
+export default function Sidebar({
+  isOpen,
+  isExpanded,
+  isMobile,
+  onClose,
+}: SidebarProps) {
   const { user } = useAuth();
 
   const isCustomer = user?.roles.includes(Role.CUSTOMER);
@@ -28,35 +34,50 @@ export default function Sidebar({ isOpen, onClose, isMobile }: SidebarProps) {
 
   return (
     <>
-      <aside className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}>
+      <aside
+        className={[
+          styles.sidebar,
+          isExpanded ? styles.expanded : styles.compact,
+          isMobile && isOpen ? styles.mobileOpen : "",
+        ].join(" ")}
+      >
         <div className={styles.container}>
           <div className={styles.sectionTitle}>WORKSPACE</div>
 
           <div className={styles.links}>
-            <NavLink to="/dashboard" onClick={onClose}>
-              <LayoutDashboard /> Dashboard
+            <NavLink to="/dashboard" onClick={onClose} title="Dashboard">
+              <LayoutDashboard />
+              <span className={styles.linkText}>Dashboard</span>
             </NavLink>
 
             {isCustomer && (
               <>
-                <NavLink to="/my-tickets" onClick={onClose}>
-                  <Ticket /> My Tickets
+                <NavLink to="/my-tickets" onClick={onClose} title="My Tickets">
+                  <Ticket />
+                  <span className={styles.linkText}>My Tickets</span>
                 </NavLink>
 
-                <NavLink to="/create-ticket" onClick={onClose}>
-                  <PlusCircle /> Create Ticket
+                <NavLink
+                  to="/create-ticket"
+                  onClick={onClose}
+                  title="Create Ticket"
+                >
+                  <PlusCircle />
+                  <span className={styles.linkText}>Create Ticket</span>
                 </NavLink>
               </>
             )}
 
-            {(isAdmin || isSupportAgent) && (
+            {isSupportAgent && (
               <>
                 <NavLink to="/ticket-queue" end onClick={onClose}>
-                  <GalleryVerticalEnd /> Ticket Queue
+                  <GalleryVerticalEnd />
+                  <span className={styles.linkText}>Ticket Queue</span>
                 </NavLink>
 
                 <NavLink to="/my-assigned-tickets" onClick={onClose}>
-                  <TicketCheck /> My Assigned Tickets
+                  <TicketCheck />
+                  <span className={styles.linkText}>My Assigned Tickets</span>
                 </NavLink>
               </>
             )}
@@ -64,15 +85,18 @@ export default function Sidebar({ isOpen, onClose, isMobile }: SidebarProps) {
             {isAdmin && (
               <>
                 <NavLink to="/tickets" onClick={onClose}>
-                  <Tickets /> All Tickets
+                  <Tickets />
+                  <span className={styles.linkText}>All Tickets</span>
                 </NavLink>
 
                 <NavLink to="/users" onClick={onClose}>
-                  <Users /> Users
+                  <Users />
+                  <span className={styles.linkText}>Users</span>
                 </NavLink>
 
                 <NavLink to="/escalations" onClick={onClose}>
-                  <GitPullRequest /> Escalation Requests
+                  <GitPullRequest />
+                  <span className={styles.linkText}>Escalation Requests</span>
                 </NavLink>
               </>
             )}

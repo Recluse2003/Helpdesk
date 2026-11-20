@@ -56,6 +56,7 @@ body {
   --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
 
   --sidebar-width: 220px;
+  --sidebar-collapsed-width: 72px;
   --navbar-height: 56px;
 
   font: 18px/145% var(--sans);

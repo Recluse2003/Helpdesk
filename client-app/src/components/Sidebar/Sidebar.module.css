@@ -2,42 +2,34 @@
     position: fixed;
     top: var(--navbar-height);
     left: 0;
-    width: var(--sidebar-width);
     height: calc(100vh - var(--navbar-height));
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    z-index: 300;
     background-color: var(--bg-sidebar);
+    z-index: 300;
+
+    transition: width 0.3s ease, transform 0.3s ease;
+    overflow-x: hidden;
 }
 
-.sidebar.open {
-    transform: translateX(0);
+.sidebar.expanded {
+    width: var(--sidebar-width);
+}
+
+.sidebar.compact {
+    width: var(--sidebar-collapsed-width);
 }
 
 .container {
     display: flex;
     flex-direction: column;
-
     padding: 1rem;
     height: 100%;
     width: 100%;;
 }
 
-.sidebarHeader {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-
-    height: var(--navbar-height);
-    width: 100%;
-
-    padding: 0.5rem 0.3rem;
-}
-
 .links {
     display: flex;
     flex-direction: column;
+    gap: 0.4rem;
 }
 
 .sectionTitle {
@@ -57,19 +49,34 @@
     padding: 0.3rem 0.4rem;
     border-radius: 6px;
     text-decoration: none;
+    white-space: nowrap;
+
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.links a:hover {
+.links a svg {
+    width: 20px;
+    height: 20px;
+}
+
+.links a:hover,
+.links a:global(.active) {
     background-color: var(--bg-nav-hover);
     color: var(--text-nav-title);
 }
 
 .links a:global(.active) {
-    padding: 0.3rem 0.6rem;
-    background-color: var(--bg-nav-hover);
-    color: var(--text-nav-title);
     font-weight: 600;
+}
+
+.sidebar.compact .linkText,
+.sidebar.compact .sectionTitle {
+    display: none;
+}
+
+.sidebar.compact .links a {
+    justify-content: center;
+    padding: 0.65rem 0;
 }
 
 .overlay {
@@ -80,18 +87,21 @@
     z-index: 150;
 }
 
-@media (min-width: 1025px) {
-    .overlay {
-        display: none;
-    }
-}
 
-@media (max-width: 1024px) {
+@media (max-width: 767px) {
     .sidebar {
+        top: var(--navbar-height);
+        height: calc(100vh - var(--navbar-height));
+        width: var(--sidebar-width);
         transform: translateX(-100%);
     }
 
-    .sidebar.open {
+    .sidebar.mobileOpen {
         transform: translateX(0);
+    }
+
+    .sidebar.mobileOpen .links a {
+        justify-content: flex-start;
+        padding: 0.6rem 0.5rem;
     }
 }

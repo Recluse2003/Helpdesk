@@ -1,21 +1,22 @@
+
 .layout {
     min-height: 100vh;
 }
 
 .mainContent {
-    margin: 0;
-    padding-left: var(--sidebar-width);
-    padding-top: var(--navbar-height);
     min-height: 100vh;
-    transition: padding-left 0.3s ease;
+    padding-top: var(--navbar-height);
+    transition: margin-left 0.3s ease;
 }
 
-.sidebarClosed .mainContent {
-    padding-left: 0;
+.sidebarExpanded .mainContent {
+    margin-left: var(--sidebar-width);
 }
 
-@media (max-width: 1024px) {
-    .mainContent {
-        padding-left: 0;
-    }
+.sidebarCompact .mainContent {
+    margin-left: var(--sidebar-collapsed-width);
+}
+
+.mobile .mainContent {
+    margin-left: 0;
 }
