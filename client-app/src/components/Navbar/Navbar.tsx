@@ -1,52 +1,32 @@
-import { Link, NavLink } from "react-router";
-import { useAuth } from "../../context/AuthContext";
-import { Role } from "../../types/auth";
+import { Link } from "react-router";
 import ProfileDropdown from "../ProfileDropdown/ProfileDropdown";
 import styles from "./Navbar.module.css";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
-export default function Navbar() {
-  const { user } = useAuth();
+interface NavbarProps {
+  onMenuClick: () => void;
+  isOpen: boolean;
+}
 
-  const isCustomer = user?.roles.includes(Role.CUSTOMER);
-  const isAdmin = user?.roles.includes(Role.ADMINISTRATOR);
-  const isSupportAgent = user?.roles.includes(Role.SUPPORTAGENT);
-
+export default function Navbar({ onMenuClick, isOpen }: NavbarProps) {
   return (
-    <nav className={styles.navbar} role="navigation">
+    <nav className={styles.navbar}>
       <div className={styles.container}>
-        <Link to="/" className={styles.logo}>
-          Helpdesk
-        </Link>
+        <div className={styles.navbarHeader}>
+          <button
+            className={styles.sidebarButton}
+            onClick={onMenuClick}
+            aria-label="Toggle sidebar"
+          >
+            {isOpen ? <PanelLeftOpen /> : <PanelLeftClose />}
+          </button>
 
-        <div className={styles.links}>
-          {isCustomer && (
-            <>
-              <NavLink className={styles.activate} to="/my-tickets">
-                My Tickets
-              </NavLink>
-
-              <NavLink to="/create-ticket">Create Ticket</NavLink>
-            </>
-          )}
-
-          {(isAdmin || isSupportAgent) && (
-            <>
-              <NavLink to="/">Dashboard</NavLink>
-
-              <NavLink to="/tickets">Tickets</NavLink>
-            </>
-          )}
-
-          {isAdmin && (
-            <>
-              <NavLink to="/escalations">Escalation requests</NavLink>
-
-              <NavLink to="/users">Users</NavLink>
-            </>
-          )}
+          <Link to="/" className={styles.logo}>
+            Helpdesk
+          </Link>
         </div>
 
-        <div className={styles.userSection}>
+        <div className={styles.actions}>
           <ProfileDropdown />
         </div>
       </div>

@@ -25,13 +25,19 @@ body {
   --palette-white: #ffffff;
   --palette-offwhite: #f3f4f6;
   --palette-ink-muted: #4b5563;
-  --bg-page: #242F4A;
-  --bg-nav: #0a2233;
-  --bg-nav-hover: #0c2d45;
-  --text-nav: #ffffff;
-  --text-h: #f3f4f6;
 
-  --bg-card: #ffffff;
+  --bg-page: #242F4A;
+  --bg-sidebar: #0a2233;
+  --bg-sidebar-hover: #0c2d45;
+  --bg-nav: #162B3D;
+  --bg-nav-hover: #1B354B;
+  --bg-nav-border: #3B4963;
+  --text-nav-active: #F1F5F9;
+  --text-nav: #AAB7C8;
+  --text-h: #AAB7C8;
+
+  --bg-card: #303D59;
+  --border-card: #3B4963;
   --text-card: #111827;
   --text-card-muted: #4b5563;
   --bg-input: #f3f4f6;
@@ -49,8 +55,8 @@ body {
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
 
-  --navbar-width: 130px;
-  --navbar-height: 40px;
+  --sidebar-width: 220px;
+  --navbar-height: 56px;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;

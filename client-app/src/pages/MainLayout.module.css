@@ -1,18 +1,21 @@
 .layout {
-  min-height: 100vh;
+    min-height: 100vh;
 }
 
-/* Desktop: navbar on the left */
-.content {
-  margin-left: var(--navbar-width);
-  padding: 0 1.5rem;
-  min-height: 100vh;
+.mainContent {
+    margin: 0;
+    padding-left: var(--sidebar-width);
+    padding-top: var(--navbar-height);
+    min-height: 100vh;
+    transition: padding-left 0.3s ease;
 }
 
-/* Smaller screens: navbar across the top */
-@media (max-width: 1256px) {
-  .content {
-    margin-left: 0;
-    padding-top: calc(var(--navbar-height) + 0.5rem);
-  }
+.sidebarClosed .mainContent {
+    padding-left: 0;
+}
+
+@media (max-width: 1024px) {
+    .mainContent {
+        padding-left: 0;
+    }
 }

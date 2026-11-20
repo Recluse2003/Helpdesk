@@ -1,7 +1,7 @@
 export default function MyTicketsPage() {
   return (
     <>
-      <h1>My Tickets</h1>
+      <h2>My Tickets</h2>
     </>
   );
 }

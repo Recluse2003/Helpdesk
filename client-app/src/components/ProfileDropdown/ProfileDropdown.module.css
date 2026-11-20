@@ -1,7 +1,8 @@
 
 .container {
     position: relative;
-    width: 100%;
+    width: auto;
+    height: 100%;
     background-color: var(--bg-nav);
 }
 
@@ -11,8 +12,8 @@
     justify-content: center;
     gap: 0.5rem;
 
-    width: 100%;
-    padding: 0.75rem;
+    width: auto;
+    height: 100%;
 
     background-color: var(--bg-nav);
     border: none;
@@ -44,11 +45,12 @@
     transform: rotate(180deg);
 }
 
-
 .dropdown {
     position: absolute;
-    left: calc(100% + 8px);
-    bottom: 0;
+    left: auto;
+    right: 0;
+    top: calc(100% + 8px);
+    bottom: auto;
 
     width: 220px;
 
@@ -63,7 +65,6 @@
     z-index: 200;
     overflow: hidden;
 }
-
 
 .dropdownHeader {
     display: flex;
@@ -138,25 +139,4 @@
 
 .logoutButton:hover {
     background-color: rgba(220, 85, 85, 0.1);
-}
-
-/* Horizontal navbar */
-
-@media (max-width: 1256px) {
-  .container {
-    width: auto;
-    height: 100%;
-  }
-
-  .profileButton {
-    width: auto;
-    height: 100%;
-  }
-
-  .dropdown {
-    left: auto;
-    right: 0;
-    top: calc(100% + 8px);
-    bottom: auto;
-  }
 }
