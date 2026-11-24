@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { Role } from "../../types/auth";
+import { Role } from "../../types/authTypes";
 import {
   Ticket,
   PlusCircle,
@@ -52,13 +52,17 @@ export default function Sidebar({
 
             {isCustomer && (
               <>
-                <NavLink to="/my-tickets" onClick={onClose} title="My Tickets">
+                <NavLink
+                  to="/tickets/my-tickets"
+                  onClick={onClose}
+                  title="My Tickets"
+                >
                   <Ticket />
                   <span className={styles.linkText}>My Tickets</span>
                 </NavLink>
 
                 <NavLink
-                  to="/create-ticket"
+                  to="/tickets/create"
                   onClick={onClose}
                   title="Create Ticket"
                 >
@@ -70,12 +74,12 @@ export default function Sidebar({
 
             {isSupportAgent && (
               <>
-                <NavLink to="/ticket-queue" end onClick={onClose}>
+                <NavLink to="/tickets/queue" end onClick={onClose}>
                   <GalleryVerticalEnd />
                   <span className={styles.linkText}>Ticket Queue</span>
                 </NavLink>
 
-                <NavLink to="/my-assigned-tickets" onClick={onClose}>
+                <NavLink to="/tickets/assigned" onClick={onClose}>
                   <TicketCheck />
                   <span className={styles.linkText}>My Assigned Tickets</span>
                 </NavLink>
@@ -94,7 +98,7 @@ export default function Sidebar({
                   <span className={styles.linkText}>Users</span>
                 </NavLink>
 
-                <NavLink to="/escalations" onClick={onClose}>
+                <NavLink to="/tickets/escalations" onClick={onClose}>
                   <GitPullRequest />
                   <span className={styles.linkText}>Escalation Requests</span>
                 </NavLink>

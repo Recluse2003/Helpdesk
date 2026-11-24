@@ -1,4 +1,4 @@
-﻿using Helpdesk.Api.Domain.Common;
+﻿using Helpdesk.Api.Domain.Enums;
 using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
@@ -17,7 +17,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
             app.MapGet("/api/tickets/me", Handle)
                 .WithTags("Tickets")
                 .WithName("GetMyTickets")
-                .Produces<PagedList<TicketSummaryDto>>(StatusCodes.Status200OK)
+                .Produces<GetTicketsByUserIdResponse>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status400BadRequest)
                 .ProducesProblem(StatusCodes.Status401Unauthorized)
                 .RequireAuthorization();
@@ -34,7 +34,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
             if (!Guid.TryParse(userIdClaim, out var userId))
                 return Results.Unauthorized();
 
-            var query = new GetTicketsByUserIdQuery(userId, request.PageNumber, request.PageSize);
+            var query = new GetTicketsByUserIdQuery(userId, request.PageNumber, request.PageSize, request.SearchTerm, request.Status);
 
             var result = await sender.Send(query, cancellationToken);
 
@@ -42,5 +42,5 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
         }
     }
 
-    public record GetTicketsByUserIdRequest(int PageNumber, int PageSize);
+    public record GetTicketsByUserIdRequest(int PageNumber = 1, int PageSize = 10, string? SearchTerm = null, TicketStatus? Status = null);
 }

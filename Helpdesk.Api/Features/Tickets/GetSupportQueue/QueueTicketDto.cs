@@ -14,8 +14,10 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
     /// <param name="UpdatedAt">The date and time the <see cref="Ticket"/> was last updated.</param>
     /// <param name="CreatedById">The unique identifier of the customer who created the <see cref="Ticket"/>.</param>
     /// <param name="CreatedByDisplayName">The display name of the customer who created the <see cref="Ticket"/>.</param>
-    /// <param name="AssignedToId">The unique identifier of the assigned support agent, or null if the <see cref="Ticket"/> is unassigned.</param>
-    /// <param name="AssigneeDisplayName">The display name of the assigned support agent, or null if the <see cref="Ticket"/> is unassigned.</param>
+    /// <param name="CreatedByDisplayName">The url of the customer's profile image who created the <see cref="Ticket"/>, or null if they have none.</param>
+    /// <param name="AssignedAgentId">The unique identifier of the assigned support agent, or null if the <see cref="Ticket"/> is unassigned.</param>
+    /// <param name="AssignedAgentDisplayName">The display name of the assigned support agent, or null if the <see cref="Ticket"/> is unassigned.</param>
+    /// <param name="AssignedAgentImageUrl">The url of the assigned support agent's profile image, or null if the <see cref="Ticket"/> is unassigned.</param>
     public record QueueTicketDto(
         Guid Id,
         string Title,
@@ -25,7 +27,9 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         DateTime UpdatedAt,
         Guid CreatedById,
         string CreatedByDisplayName,
-        Guid? AssignedToId,
-        string? AssigneeDisplayName
+        string? CreatedByImageUrl,
+        Guid? AssignedAgentId,
+        string? AssignedAgentDisplayName,
+        string? AssignedAgentImageUrl
     );
 }

@@ -1,0 +1,24 @@
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--card-text);
+}
+
+.Low {
+    background-color: #118f00;
+}
+
+.Medium {
+    background-color: #ffee01;
+    color: black;
+}
+
+.High {
+    background-color: #d86507;
+}
+
+.Urgent {
+    background-color: #c50e01;
+}

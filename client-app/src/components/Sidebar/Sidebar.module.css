@@ -3,8 +3,10 @@
     top: var(--navbar-height);
     left: 0;
     height: calc(100vh - var(--navbar-height));
-    background-color: var(--bg-sidebar);
+    background-color: var(--sidebar-background);
     z-index: 300;
+    margin: 0;
+    padding: 0;
 
     transition: width 0.3s ease, transform 0.3s ease;
     overflow-x: hidden;
@@ -33,7 +35,7 @@
 }
 
 .sectionTitle {
-    color: var(--text-nav);
+    color: var(--sidebar-section-title-text);
     font-size: 0.75rem;
     font-weight: 700;
 }
@@ -43,7 +45,7 @@
     align-items: center;
     gap: 0.75rem;
 
-    color: var(--text-nav);
+    color: var(--sidebar-link-text);
     font-size: 0.9375rem;
     font-weight: 500;
     padding: 0.3rem 0.4rem;
@@ -61,8 +63,8 @@
 
 .links a:hover,
 .links a:global(.active) {
-    background-color: var(--bg-nav-hover);
-    color: var(--text-nav-title);
+    background-color: var(--sidebar-background-hover);
+    color: var(--sidebar-link-text-active);
 }
 
 .links a:global(.active) {

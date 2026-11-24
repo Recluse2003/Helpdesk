@@ -11,7 +11,7 @@ import {
 import { setAccessToken, subscribeToToken } from "../services/tokenStore";
 import { api } from "../services/api";
 import { refreshAccessToken } from "../services/authService";
-import { Role } from "../types/auth";
+import { Role } from "../types/authTypes";
 import { loginUser, logoutUser } from "../services/authService";
 
 export interface User {

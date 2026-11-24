@@ -48,82 +48,93 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetTicketsByUserId
         }
 
         [Fact]
-        public async Task Handle_WhenUserHasTickets_ReturnsTheirTickets()
+        public async Task Handle_WhenUserHasTickets_ReturnsTheirTicketsAndStatistics()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
+            var customer = await CreateUser();
 
-            var ticket1 = CreateTicket(customerId, "First ticket");
-            var ticket2 = CreateTicket(customerId, "Second ticket");
+            var ticket1 = CreateTicket(customer.Id, "First ticket");
+            var ticket2 = CreateTicket(customer.Id, "Second ticket");
 
             await _context.Tickets.AddRangeAsync(ticket1, ticket2);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 1, 10);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Items.Should().HaveCount(2);
-            result.Value.TotalCount.Should().Be(2);
+
+            result.Value.Tickets.Items.Should().HaveCount(2);
+            result.Value.Tickets.TotalCount.Should().Be(2);
+
+            result.Value.Statistics.TotalTickets.Should().Be(2);
         }
 
         [Fact]
-        public async Task Handle_WhenUserHasNoTickets_ReturnsEmptyList()
+        public async Task Handle_WhenUserHasNoTickets_ReturnsEmptyListAndZeroStatistics()
         {
             // Arrange
-            var query = new GetTicketsByUserIdQuery(Guid.NewGuid(), 1, 10);
+            var customer = await CreateUser();
+
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Items.Should().BeEmpty();
-            result.Value.TotalCount.Should().Be(0);
+
+            result.Value.Tickets.Items.Should().BeEmpty();
+            result.Value.Tickets.TotalCount.Should().Be(0);
+
+            result.Value.Statistics.TotalTickets.Should().Be(0);
         }
 
         [Fact]
         public async Task Handle_WhenOtherUsersHaveTickets_ReturnsOnlyRequestingUsersTickets()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
-            var anotherCustomerId = Guid.NewGuid();
+            var customer = await CreateUser("Customer");
+            var anotherCustomer = await CreateUser("Another Customer");
 
-            var ownTicket = CreateTicket(customerId, "My ticket");
-            var otherTicket = CreateTicket(anotherCustomerId, "Another user's ticket");
+            var ownTicket = CreateTicket(customer.Id, "My ticket");
+            var otherTicket = CreateTicket(anotherCustomer.Id, "Another user's ticket");
 
             await _context.Tickets.AddRangeAsync(ownTicket, otherTicket);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 1, 10);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Items.Should().ContainSingle();
-            result.Value.Items.Should().NotContain(x => x.Title == "Another user's ticket");
+
+            result.Value.Tickets.Items.Should().ContainSingle();
+            result.Value.Tickets.Items.Should().Contain(x => x.Title == "My ticket");
+            result.Value.Tickets.Items.Should().NotContain(x => x.Title == "Another user's ticket");
+
+            result.Value.Statistics.TotalTickets.Should().Be(1);
         }
 
         [Fact]
         public async Task Handle_WhenTicketIsAssigned_ReturnsAssignedAgentDisplayName()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
-
+            var customer = await CreateUser("Customer");
             var agent = await CreateUser("Support Agent");
-            var ticket = CreateTicket(customerId, "Assigned ticket");
 
+            var ticket = CreateTicket(customer.Id, "Assigned ticket");
             ticket.Claim(agent.Id, agent.DisplayName);
 
             await _context.Tickets.AddAsync(ticket);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 1, 10);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -131,21 +142,24 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetTicketsByUserId
             // Assert
             result.IsSuccess.Should().BeTrue();
 
-            result.Value.Items.Should().ContainSingle();
-            result.Value.Items.First().AssignedAgentUsername.Should().Be(agent.DisplayName);
+            var returnedTicket = result.Value.Tickets.Items.Should().ContainSingle().Subject;
+
+            returnedTicket.AssignedAgentUsername.Should().Be(agent.DisplayName);
+            returnedTicket.AssignedAgentId.Should().Be(agent.Id);
         }
 
         [Fact]
-        public async Task Handle_WhenTicketIsUnassigned_ReturnsNullAssignedAgentName()
+        public async Task Handle_WhenTicketIsUnassigned_ReturnsNullAssignedAgentDetails()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
-            var ticket = CreateTicket(customerId, "Unassigned ticket");
+            var customer = await CreateUser();
+
+            var ticket = CreateTicket(customer.Id, "Unassigned ticket");
 
             await _context.Tickets.AddAsync(ticket);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 1, 10);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -153,146 +167,268 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetTicketsByUserId
             // Assert
             result.IsSuccess.Should().BeTrue();
 
-            result.Value.Items.Should().ContainSingle();
-            result.Value.Items.First().AssignedAgentUsername.Should().BeNull();
+            var returnedTicket = result.Value.Tickets.Items.Should().ContainSingle().Subject;
+
+            returnedTicket.AssignedAgentUsername.Should().BeNull();
+            returnedTicket.AssignedAgentId.Should().BeNull();
         }
 
         [Fact]
         public async Task Handle_WhenFilteringByPageSize_ReturnsOnlyRequestedNumberOfTickets()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
+            var customer = await CreateUser();
 
             var tickets = Enumerable.Range(1, 5)
-                .Select(i => CreateTicket(customerId, $"Ticket {i}"))
+                .Select(i => CreateTicket(customer.Id, $"Ticket {i}"))
                 .ToList();
 
-            _context.Tickets.AddRange(tickets);
+            await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 1, 2);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 2, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Items.Should().HaveCount(2);
-            result.Value.PageNumber.Should().Be(1);
-            result.Value.PageSize.Should().Be(2);
-            result.Value.TotalCount.Should().Be(5);
-            result.Value.TotalPages.Should().Be(3);
+
+            result.Value.Tickets.Items.Should().HaveCount(2);
+            result.Value.Tickets.PageNumber.Should().Be(1);
+            result.Value.Tickets.PageSize.Should().Be(2);
+            result.Value.Tickets.TotalCount.Should().Be(5);
+            result.Value.Tickets.TotalPages.Should().Be(3);
+
+            result.Value.Statistics.TotalTickets.Should().Be(5);
         }
 
         [Fact]
         public async Task Handle_WhenRequestingSecondPage_ReturnsRemainingTickets()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
+            var customer = await CreateUser();
 
             var tickets = Enumerable.Range(1, 5)
-                .Select(i => CreateTicket(customerId, $"Ticket {i}"))
+                .Select(i => CreateTicket(customer.Id, $"Ticket {i}"))
                 .ToList();
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 2, 2);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 2, 2, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Items.Should().HaveCount(2);
-            result.Value.PageNumber.Should().Be(2);
-            result.Value.PageSize.Should().Be(2);
-            result.Value.TotalCount.Should().Be(5);
+
+            result.Value.Tickets.Items.Should().HaveCount(2);
+            result.Value.Tickets.PageNumber.Should().Be(2);
+            result.Value.Tickets.PageSize.Should().Be(2);
+            result.Value.Tickets.TotalCount.Should().Be(5);
         }
 
         [Fact]
         public async Task Handle_WhenRequestingLastPage_ReturnsRemainingTicket()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
+            var customer = await CreateUser();
 
             var tickets = Enumerable.Range(1, 5)
-                .Select(i => CreateTicket(customerId, $"Ticket {i}"))
+                .Select(i => CreateTicket(customer.Id, $"Ticket {i}"))
                 .ToList();
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 3, 2);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 3, 2, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.Items.Should().ContainSingle();
-            result.Value.PageNumber.Should().Be(3);
-            result.Value.TotalCount.Should().Be(5);
+
+            result.Value.Tickets.Items.Should().ContainSingle();
+            result.Value.Tickets.PageNumber.Should().Be(3);
+            result.Value.Tickets.TotalCount.Should().Be(5);
         }
 
         [Fact]
         public async Task Handle_WhenPageNumberIsLessThanOne_UsesFirstPage()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
+            var customer = await CreateUser();
 
             var tickets = Enumerable.Range(1, 3)
-                .Select(i => CreateTicket(customerId, $"Ticket {i}"))
+                .Select(i => CreateTicket(customer.Id, $"Ticket {i}"))
                 .ToList();
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 0, 2);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 0, 2, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.PageNumber.Should().Be(1);
-            result.Value.Items.Should().HaveCount(2);
+
+            result.Value.Tickets.PageNumber.Should().Be(1);
+            result.Value.Tickets.Items.Should().HaveCount(2);
         }
 
         [Fact]
         public async Task Handle_WhenPageSizeIsLessThanOne_UsesDefaultPageSize()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
+            var customer = await CreateUser();
 
             var tickets = Enumerable.Range(1, 12)
-                .Select(i => CreateTicket(customerId, $"Ticket {i}"))
+                .Select(i => CreateTicket(customer.Id, $"Ticket {i}"))
                 .ToList();
 
             await _context.Tickets.AddRangeAsync(tickets);
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 1, 0);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 0, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Value.PageNumber.Should().Be(1);
-            result.Value.PageSize.Should().Be(10);
-            result.Value.Items.Should().HaveCount(10);
-            result.Value.TotalCount.Should().Be(12);
+
+            result.Value.Tickets.PageNumber.Should().Be(1);
+            result.Value.Tickets.PageSize.Should().Be(10);
+            result.Value.Tickets.Items.Should().HaveCount(10);
+            result.Value.Tickets.TotalCount.Should().Be(12);
+        }
+
+        [Fact]
+        public async Task Handle_WhenSearchTermIsSpecified_ReturnsMatchingTickets()
+        {
+            // Arrange
+            var customer = await CreateUser();
+
+            await _context.Tickets.AddRangeAsync(
+                CreateTicket(customer.Id, "Password reset"),
+                CreateTicket(customer.Id, "Unable to login"),
+                CreateTicket(customer.Id, "Password recovery")
+            );
+
+            await _context.SaveChangesAsync();
+
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, "password");
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+
+            result.Value.Tickets.Items.Should().HaveCount(2);
+            result.Value.Tickets.Items.Should().OnlyContain(
+                x => x.Title.Contains("password", StringComparison.OrdinalIgnoreCase));
+
+            result.Value.Tickets.TotalCount.Should().Be(2);
+            result.Value.Statistics.TotalTickets.Should().Be(3);
+        }
+
+        [Fact]
+        public async Task Handle_WhenSearchTermHasNoMatches_ReturnsEmptyResults()
+        {
+            // Arrange
+            var customer = await CreateUser();
+
+            await _context.Tickets.AddRangeAsync(
+                CreateTicket(customer.Id, "Password reset"),
+                CreateTicket(customer.Id, "Unable to login")
+            );
+
+            await _context.SaveChangesAsync();
+
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, "printer");
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+
+            result.Value.Tickets.Items.Should().BeEmpty();
+            result.Value.Tickets.TotalCount.Should().Be(0);
+            result.Value.Statistics.TotalTickets.Should().Be(2);
+        }
+
+        [Fact]
+        public async Task Handle_WhenSearchTermIsSpecifiedAndMultiplePagesExist_ReturnsCorrectPage()
+        {
+            // Arrange
+            var customer = await CreateUser();
+
+            var tickets = Enumerable.Range(1, 5)
+                .Select(i => CreateTicket(customer.Id, $"Password issue {i}"))
+                .ToList();
+
+            tickets.Add(CreateTicket(customer.Id, "Printer issue"));
+
+            await _context.Tickets.AddRangeAsync(tickets);
+            await _context.SaveChangesAsync();
+
+            var query = new GetTicketsByUserIdQuery(customer.Id, 2, 2, "password");
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+
+            result.Value.Tickets.Items.Should().HaveCount(2);
+            result.Value.Tickets.PageNumber.Should().Be(2);
+            result.Value.Tickets.PageSize.Should().Be(2);
+            result.Value.Tickets.TotalCount.Should().Be(5);
+            result.Value.Tickets.TotalPages.Should().Be(3);
+
+            result.Value.Statistics.TotalTickets.Should().Be(6);
+        }
+
+        [Fact]
+        public async Task Handle_WhenSearchTermIsEmpty_ReturnsAllUserTickets()
+        {
+            // Arrange
+            var customer = await CreateUser();
+
+            await _context.Tickets.AddRangeAsync(
+                CreateTicket(customer.Id, "First ticket"),
+                CreateTicket(customer.Id, "Second ticket")
+            );
+
+            await _context.SaveChangesAsync();
+
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, "");
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+
+            result.Value.Tickets.Items.Should().HaveCount(2);
+            result.Value.Tickets.TotalCount.Should().Be(2);
         }
 
         [Fact]
         public async Task Handle_WhenTicketsHaveDifferentUpdatedDates_ReturnsNewestFirst()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
+            var customer = await CreateUser();
 
-            var olderTicket = CreateTicket(customerId, "Older ticket");
-            var newerTicket = CreateTicket(customerId, "Newer ticket");
+            var olderTicket = CreateTicket(customer.Id, "Older ticket");
+            var newerTicket = CreateTicket(customer.Id, "Newer ticket");
 
             await _context.Tickets.AddRangeAsync(olderTicket, newerTicket);
             await _context.SaveChangesAsync();
@@ -307,7 +443,7 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetTicketsByUserId
 
             await _context.SaveChangesAsync();
 
-            var query = new GetTicketsByUserIdQuery(customerId, 1, 10);
+            var query = new GetTicketsByUserIdQuery(customer.Id, 1, 10, null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -315,7 +451,52 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetTicketsByUserId
             // Assert
             result.IsSuccess.Should().BeTrue();
 
-            result.Value.Items.Select(x => x.Title).Should().ContainInOrder("Newer ticket", "Older ticket");
+            result.Value.Tickets.Items
+                .Select(x => x.Title)
+                .Should()
+                .ContainInOrder("Newer ticket", "Older ticket");
+        }
+
+        [Fact]
+        public async Task Handle_WhenSearchTermAndStatusAreSpecified_ReturnsMatchingTickets()
+        {
+            // Arrange
+            var customer = await CreateUser();
+
+            var matchingTicket = CreateTicket(customer.Id, "Password reset");
+            var otherMatchingTicket = CreateTicket(customer.Id, "Password recovery");
+            var unrelatedTicket = CreateTicket(customer.Id, "Printer issue");
+
+            matchingTicket.Resolve();
+            otherMatchingTicket.Resolve();
+
+            await _context.Tickets.AddRangeAsync(
+                matchingTicket,
+                otherMatchingTicket,
+                unrelatedTicket
+            );
+
+            await _context.SaveChangesAsync();
+
+            var query = new GetTicketsByUserIdQuery(
+                customer.Id,
+                1,
+                10,
+                "password",
+                TicketStatus.Resolved
+            );
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+
+            result.Value.Tickets.Items.Should().HaveCount(2);
+            result.Value.Tickets.Items.Should().OnlyContain(
+                x => x.Status == TicketStatus.Resolved &&
+                     x.Title.Contains("password", StringComparison.OrdinalIgnoreCase)
+            );
         }
     }
 }

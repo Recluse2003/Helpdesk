@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./FormInput.module.css";
+import styles from "./AuthFormInput.module.css";
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -7,7 +7,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   errors?: string[];
 }
 
-export function FormInput({
+export function AuthFormInput({
   label,
   id,
   errors,

@@ -1,7 +1,7 @@
 .navbar {
-    background-color: var(--bg-nav);
+    background-color: var(--navbar-background);
     position: fixed;
-    border-bottom: 1px solid var(--bg-nav-border);
+    border-bottom: 1px solid var(--navbar-border);
     top: 0;
     left: 0;
     width: 100%;
@@ -44,7 +44,7 @@
 }
 
 .sidebarButton:hover {
-    background-color: var(--bg-nav-hover);
+    background-color: var(--navbar-background-hover);
 }
 
 .sidebarButton svg {
@@ -80,8 +80,8 @@
     height: 100%;
     padding: 0.5rem;
 
-    background-color: var(--bg-nav);
-    color: var(--text-nav);
+    background-color: var(--navbar-background);
+    color: var(--navbar-text);
     font-weight: 400;
     text-align: left;
     transition: background-color 0.2s ease;
@@ -92,11 +92,12 @@
 }
 
 .links a:hover {
-    background-color: var(--bg-nav-hover);
-    color: var(--text-nav);
+    background-color: var(--navbar-background-hover);
+    color: var(--navbar-text);
 }
 
 .actions  {
+    color: var(--navbar-text);
     flex-direction: row;
     flex-shrink: 0;
     align-items: center;

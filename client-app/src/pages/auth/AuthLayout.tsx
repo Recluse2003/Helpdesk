@@ -1,7 +1,7 @@
 import styles from "./Auth.module.css";
 import { Outlet } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { Role } from "../../types/auth";
+import { Role } from "../../types/authTypes";
 import { Navigate } from "react-router";
 
 export default function AuthLayout() {
@@ -21,7 +21,7 @@ export default function AuthLayout() {
     }
 
     if (user.roles.includes(Role.CUSTOMER)) {
-      return <Navigate to="/my-tickets" replace />;
+      return <Navigate to="/dashboard" replace />;
     }
 
     return <Navigate to="/unauthorized" replace />;

@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Helpdesk.Tests.Integration.Features.Tickets
 {
@@ -58,14 +60,14 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
                 roles);
         }
 
-        private async Task<Ticket> CreateTicketAsync(Guid creatorId, Guid? agentId = null)
+        private async Task<Ticket> CreateTicketAsync(Guid creatorId, Guid? agentId = null, string? ticketTitle = null)
         {
             using var scope = Factory.Services.CreateScope();
 
             var context = scope.ServiceProvider.GetRequiredService<HelpdeskDbContext>();
 
             var ticket = new Ticket(
-                "Ticket title",
+                ticketTitle != null ? ticketTitle : "Ticket title",
                 "Ticket description",
                 creatorId,
                 TicketPriority.Medium);
@@ -135,11 +137,12 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>();
 
             result.Should().NotBeNull();
-            result!.Items.Should().BeEmpty();
-            result.TotalCount.Should().Be(0);
+            result!.Tickets.Items.Should().BeEmpty();
+            result.Tickets.TotalCount.Should().Be(0);
+            result.Statistics.TotalTickets.Should().Be(0);
         }
 
         [Fact]
@@ -166,12 +169,16 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>(
+                TestJsonOptions.Default
+            );
 
-            result.Should().NotBeNull();
-            result!.Items.Should().ContainSingle();
-            result.Items.Should().Contain(x => x.Id == ownTicket.Id);
-            result.Items.Should().NotContain(x => x.Id == anotherTicket.Id);
+            result!.Tickets.Items.Should().NotBeNull();
+            result!.Tickets.Items.Should().ContainSingle();
+            result.Tickets.Items.Should().Contain(x => x.Id == ownTicket.Id);
+            result.Tickets.Items.Should().NotContain(x => x.Id == anotherTicket.Id);
+
+            result.Statistics.TotalTickets.Should().Be(1);
         }
 
         [Fact]
@@ -193,11 +200,13 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>(
+                TestJsonOptions.Default
+            );
 
-            result.Should().NotBeNull();
+            result.Tickets.Should().NotBeNull();
 
-            result!.Items.Should().ContainSingle(x =>
+            result!.Tickets.Items.Should().ContainSingle(x =>
                 x.Id == ticket.Id &&
                 x.AssignedAgentUsername == null);
         }
@@ -225,11 +234,13 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>(
+                TestJsonOptions.Default
+            );
 
-            result.Should().NotBeNull();
+            result!.Tickets.Should().NotBeNull();
 
-            result!.Items.Should().ContainSingle(x =>
+            result!.Tickets.Items.Should().ContainSingle(x =>
                 x.Id == ticket.Id &&
                 x.AssignedAgentUsername == agent.DisplayName);
         }
@@ -256,13 +267,15 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>(
+                TestJsonOptions.Default
+            );
 
-            result.Should().NotBeNull();
-            result!.Items.Should().HaveCount(2);
-            result.TotalCount.Should().Be(5);
-            result.PageNumber.Should().Be(1);
-            result.PageSize.Should().Be(2);
+            result.Tickets.Should().NotBeNull();
+            result!.Tickets.Items.Should().HaveCount(2);
+            result.Tickets.TotalCount.Should().Be(5);
+            result.Tickets.PageNumber.Should().Be(1);
+            result.Tickets.PageSize.Should().Be(2);
         }
 
         [Fact]
@@ -287,12 +300,75 @@ namespace Helpdesk.Tests.Integration.Features.Tickets
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<PagedList<TicketSummaryDto>>();
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>(
+                TestJsonOptions.Default
+            );
 
-            result.Should().NotBeNull();
-            result!.Items.Should().HaveCount(2);
-            result.PageNumber.Should().Be(2);
-            result.TotalCount.Should().Be(5);
+            result.Tickets.Should().NotBeNull();
+            result!.Tickets.Items.Should().HaveCount(2);
+            result.Tickets.PageNumber.Should().Be(2);
+            result.Tickets.TotalCount.Should().Be(5);
+        }
+
+        [Fact]
+        public async Task GetMyTickets_WhenSearchTermIsSpecified_ReturnsOnlySpecifiedTickets()
+        {
+            // Arrange
+            var customer = await CreateUserAsync(
+                "Customer",
+                RoleNames.Customer);
+
+            await CreateTicketAsync(customer.Id, null, "target");
+            await CreateTicketAsync(customer.Id);
+
+            var token = await GenerateAccessTokenAsync(customer);
+            Authenticate(token);
+
+            // Act
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10&searchTerm=target");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>(
+                TestJsonOptions.Default
+            );
+
+            result.Tickets.Should().NotBeNull();
+            result!.Tickets.Items.Should().HaveCount(1);
+
+            result!.Tickets.Items.Should().ContainSingle(x => x.Title == "target");
+        }
+
+
+        [Fact]
+        public async Task GetMyTickets_WhenSearchTermIsSpecified_ReturnsOnlySpecifiedTickets()
+        {
+            // Arrange
+            var customer = await CreateUserAsync(
+                "Customer",
+                RoleNames.Customer);
+
+            await CreateTicketAsync(customer.Id, null, "target");
+            await CreateTicketAsync(customer.Id);
+
+            var token = await GenerateAccessTokenAsync(customer);
+            Authenticate(token);
+
+            // Act
+            var response = await GetTicketsByUserIdAsync("?pageNumber=1&pageSize=10&searchTerm=target");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var result = await response.Content.ReadFromJsonAsync<GetTicketsByUserIdResponse>(
+                TestJsonOptions.Default
+            );
+
+            result.Tickets.Should().NotBeNull();
+            result!.Tickets.Items.Should().HaveCount(1);
+
+            result!.Tickets.Items.Should().ContainSingle(x => x.Title == "target");
         }
     }
 }

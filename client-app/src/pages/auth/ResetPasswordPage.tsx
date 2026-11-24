@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useApiFormErrors } from "../../hooks/useApiFormErrors";
-import { FormInput } from "../../components/FormInput/FormInput";
+import { AuthFormInput } from "./AuthFormInput/AuthFormInput";
 import { Link } from "react-router";
 import styles from "./Auth.module.css";
 import { useSearchParams } from "react-router";
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
           </div>
         )}
 
-        <FormInput
+        <AuthFormInput
           id="password"
           label="New password"
           type="password"
@@ -110,7 +110,7 @@ export default function ResetPasswordPage() {
           autoComplete="new-password"
         />
 
-        <FormInput
+        <AuthFormInput
           id="confirmPassword"
           label="Confirm new password"
           type="password"

@@ -1,0 +1,355 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    background-color: var(--card-background);
+    color: var(--card-text)
+}
+
+.container hr {
+    border: none;
+    border-top: 1px solid var(--card-border);
+    margin: 0 0 1rem;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+}
+
+.header div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header h1 {
+    color: var(--card-text)
+}
+
+.header p {
+    color: var(--card-text-muted);
+}
+
+.header a {
+    background-color: var(--button-primary-background);
+    color: var(--button-primary-text);
+    border: 0;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-weight: bold;
+    text-decoration: none;
+    
+}
+
+.header a:hover:not(:disabled) { 
+    background-color: var(--button-primary-background-hover);
+}
+
+.ticketStatistics {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .ticketStatistics {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.ticketStatistic {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticketStatistic span:first-child {
+    color: var(--card-text-muted);
+    font-size: 0.85rem;
+}
+
+.ticketStatistic span:last-child {
+    color: var(--card-text);
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.ticketFilters {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+}
+
+.searchContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+
+    background-color: var(--card-input-background);
+    border: 1px solid var(--card-border);
+
+    color: var(--card-input-text);
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.searchContainer {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 8px;
+}
+
+.searchContainer:focus-within {
+    border-color: var(--button-primary-background-hover);
+}
+
+.searchContainer > svg {
+    flex-shrink: 0;
+}
+
+.searchContainer input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+
+    border: none;
+    outline: none;
+    background: transparent;
+
+    color: var(--card-text);
+    font-family: inherit;
+    font-size: 0.875rem;
+}
+
+.searchContainer input::placeholder {
+    color: var(--card-text-muted);
+}
+
+.searchContainer input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.searchContainer button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+
+    color: var(--text-card-muted);
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.searchContainer button:hover:not(:disabled) {
+    color: var(--card-text);
+    background-color: var(--button-primary-background-hover);
+}
+
+.searchContainer button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.searchContainer input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.statusFilter {
+    width: 100%;
+    max-width: 300px;
+    min-width: 160px;
+    
+    padding: 12px 14px;
+
+    appearance: none;
+    background-color: var(--card-input-background);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+
+    color: var(--card-input-text);
+    font-family: inherit;
+    font-size: 0.875rem;
+
+    cursor: pointer;
+    outline: none;
+
+    /* Custom dropdown arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23AAB7C8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.statusFilter:focus {
+    border-color: var(--button-primary-background-hover);
+}
+
+.statusFilter:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.statusFilter option {
+    background-color: var(--card-background);
+    color: var(--card-text);
+}
+
+.ticketCard {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    background-color: var(--card-input-background);
+    color: var(--card-input-text)
+}
+
+.ticketHeader {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ticketId {
+    color: var(--card-text-muted);
+    font-size: 1rem;
+}
+
+.ticketBadges {
+    display: flex;
+    justify-self: center;
+    align-self: center;
+    gap: 0.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.ticketFooter {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ticketAssignedAgent {
+    display: flex;
+    justify-self: center;
+    align-self: center;
+    gap: 1rem;
+}
+
+.ticketAssignedAgent span {
+    justify-self: center;
+    align-self: center;
+}
+
+.agentAvatar,
+.agentAvatarPlaceholder {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.agentAvatarPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-nav);
+}
+
+.viewTicketButton {
+    justify-self: center;
+    align-self: center;
+    background-color: var(--button-primary-background);
+    color: var(--button-primary-text);
+    border: 0;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.viewTicketButton:hover:not(:disabled) { 
+    background-color: var(--button-primary-background-hover);
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.footer span {
+    color: var(--card-text-muted);
+    font-size: 0.9rem;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.pagination button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+
+    border: 0;
+    border-radius: 6px;
+    background-color: transparent;
+
+    color: var(--card-text);
+    font-family: inherit;
+    font-size: 0.875rem;
+
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: var(--card-input-background);
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination input {
+    width: 48px;
+    height: 36px;
+    padding: 0 6px;
+
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    background-color: var(--card-background);
+
+    color: var(--card-text);
+    font: inherit;
+    text-align: center;
+    outline: none;
+}
+
+.pagination input:focus {
+    border-color: var(--button-primary-background-hover);
+}

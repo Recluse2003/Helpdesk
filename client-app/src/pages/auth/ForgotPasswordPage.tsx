@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useApiFormErrors } from "../../hooks/useApiFormErrors";
-import { FormInput } from "../../components/FormInput/FormInput";
+import { AuthFormInput } from "./AuthFormInput/AuthFormInput";
 import { Link } from "react-router";
 import styles from "./Auth.module.css";
 import { forgotPassword } from "../../services/authService";
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <FormInput
+        <AuthFormInput
           id="email"
           label="Email"
           type="email"

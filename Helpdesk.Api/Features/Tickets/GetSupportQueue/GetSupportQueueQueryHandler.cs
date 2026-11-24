@@ -90,8 +90,10 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
                     x.Ticket.UpdatedAt,
                     x.Ticket.CreatedById,
                     x.CustomerDisplayName,
+                    null,
                     x.Ticket.AssignedToId,
-                    x.AssigneeDisplayName
+                    x.AssigneeDisplayName,
+                    null
                 ))
                 .ToListAsync(cancellationToken);
 

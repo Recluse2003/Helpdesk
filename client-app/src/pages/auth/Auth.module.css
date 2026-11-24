@@ -7,11 +7,11 @@
     background-color: var(--bg);
 
     --bg: #0a2233;
-    --bg-card: #242F4A;
-    --text-card: #ffffff;
-    --text-card-muted: #f3f4f6;
+    --card-background: #242F4A;
+    --card-text: #ffffff;
+    --card-text-muted: #f3f4f6;
     --bg-input: #242F4A;
-    --border-card: rgba(255, 255, 255, 0.2);
+    --card-border: rgba(255, 255, 255, 0.2);
 }
 
 .card {
@@ -19,9 +19,9 @@
     max-width: 420px;
     padding: 2rem;
     border-radius: 8px;
-    background-color: var(--bg-card);
-    color: var(--text-card);
-    border: 1px solid var(--bg-card);
+    background-color: var(--card-background);
+    color: var(--card-text);
+    border: 1px solid var(--card-background);
 }
 
 .card h2 {
@@ -36,7 +36,7 @@
 .card hr {
     width: 100%;
     border: none;
-    border-top: 1px solid var(--border-card);
+    border-top: 1px solid var(--card-border);
     margin: 1rem 0;
 }
 
@@ -47,24 +47,24 @@
 }
 
 .card button {
-    background-color: var(--btn-primary-bg);
-    color: var(--btn-primary-text);
-    border: 1px solid var(--btn-primary-bg);
+    background-color: var(--button-primary-background);
+    color: var(--button-primary-text);
+    border: 1px solid var(--button-primary-background);
     border-radius: 6px;
     padding: 0.75rem;
     font-weight: bold;
 }
 
 .card button[type="submit"]:hover:not(:disabled) {
-    background-color: var(--btn-primary-hover);
+    background-color: var(--button-primary-background-hover);
 }
 
 .error {
-    color: var(--error)
+    color: var(--color-error)
 }
 
 .success {
-    color: var(--success)
+    color: var(--color-success)
 }
 
 .card a {

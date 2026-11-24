@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useApiFormErrors } from "../../hooks/useApiFormErrors";
-import { FormInput } from "../../components/FormInput/FormInput";
+import { AuthFormInput } from "./AuthFormInput/AuthFormInput";
 import { api } from "../../services/api";
 import styles from "./Auth.module.css";
 import { Link, useSearchParams, useNavigate } from "react-router";
@@ -106,7 +106,7 @@ export default function ConfirmEmailPage() {
             </div>
           )}
 
-          <FormInput
+          <AuthFormInput
             id="email"
             label="Email"
             type="email"

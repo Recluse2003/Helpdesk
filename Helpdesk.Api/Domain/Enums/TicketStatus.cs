@@ -18,7 +18,7 @@
         /// <summary>
         /// The support agent needs additional information or a response from the customer to continue. 
         /// </summary>
-        AwaitingCustomer,
+        AwaitingCustomerResponse,
 
         /// <summary>
         /// The support agent believes the issue has been resolved but is waiting to see if the customer agrees. 

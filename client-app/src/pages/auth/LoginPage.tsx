@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useApiFormErrors } from "../../hooks/useApiFormErrors";
-import { FormInput } from "../../components/FormInput/FormInput";
+import { AuthFormInput } from "./AuthFormInput/AuthFormInput";
 import { useNavigate, useSearchParams } from "react-router";
 import { Link } from "react-router";
 import { getAuthenticatedUserPath } from "../../utils/authUtils";
@@ -62,7 +62,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <FormInput
+        <AuthFormInput
           id="email"
           label="Email"
           type="email"
@@ -76,7 +76,7 @@ export default function LoginPage() {
           autoComplete="username"
         />
 
-        <FormInput
+        <AuthFormInput
           id="password"
           label="Password"
           type="password"

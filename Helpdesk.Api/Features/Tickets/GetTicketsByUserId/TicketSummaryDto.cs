@@ -12,7 +12,9 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
     /// <param name="Priority">The priority of the <see cref="Ticket"/>.</param>
     /// <param name="CreatedAt">The date and time the <see cref="Ticket"/> was created.</param>
     /// <param name="UpdatedAt">The date and time the <see cref="Ticket"/> was last updated.</param>
+    /// <param name="AssignedAgentId">The unique identifier of the assigned support agent, or null if the <see cref="Ticket"/> is unassigned.</param>
     /// <param name="AssignedAgentUsername">The display name of the assigned support agent, or null if the <see cref="Ticket"/> is unassigned.</param>
+    /// <param name="AssignedAgentImageUrl">The url of the assigned support agent's profile image, or null if the <see cref="Ticket"/> is unassigned.</param>
     public record TicketSummaryDto(
         Guid Id, 
         string Title, 
@@ -20,6 +22,8 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
         TicketPriority Priority, 
         DateTime CreatedAt,
         DateTime UpdatedAt, 
-        string? AssignedAgentUsername
+        Guid? AssignedAgentId,
+        string? AssignedAgentUsername,
+        string? AssignedAgentImageUrl = null
     );
 }

@@ -1,0 +1,27 @@
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--card-text);
+}
+
+.Open {
+    background-color: #1d4ed8;
+}
+
+.InProgress {
+    background-color: #92400e;
+}
+
+.AwaitingCustomerResponse {
+    background-color: #6d28d9;
+}
+
+.Resolved {
+    background-color: #166534;
+}
+
+.Closed {
+    background-color: #374151;
+}

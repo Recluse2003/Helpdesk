@@ -5,18 +5,28 @@
 
 .mainContent {
     min-height: 100vh;
-    padding-top: var(--navbar-height);
-    transition: margin-left 0.3s ease;
+    margin: 0;
+    padding: 1rem;
+    padding-top: calc(var(--navbar-height) + 1rem);
+
+    display: flex;
+    justify-content: center;
+
+    transition: padding-left 0.3s ease;
 }
 
 .sidebarExpanded .mainContent {
-    margin-left: var(--sidebar-width);
+    padding-left: calc(var(--sidebar-width) + 1rem);
 }
 
 .sidebarCompact .mainContent {
-    margin-left: var(--sidebar-collapsed-width);
+    padding-left: calc(var(--sidebar-collapsed-width) + 1rem);
 }
 
 .mobile .mainContent {
-    margin-left: 0;
+    padding-left: 1rem;
+}
+
+.mainContent h1 {
+    margin: 0;
 }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 
 namespace Helpdesk.Tests.Integration
 {
@@ -43,6 +44,14 @@ namespace Helpdesk.Tests.Integration
 
                 services.AddSingleton(FakeEmailService);
                 services.AddSingleton<IEmailService>(sp => sp.GetRequiredService<FakeEmailService>());
+
+                // Configure JSON serialisation for integration tests.
+                services.ConfigureHttpJsonOptions(options =>
+                {
+                    options.SerializerOptions.Converters.Add(
+                        new JsonStringEnumConverter()
+                    );
+                });
             });
         }
 

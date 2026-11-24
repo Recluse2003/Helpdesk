@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useApiFormErrors } from "../../hooks/useApiFormErrors";
-import { FormInput } from "../../components/FormInput/FormInput";
+import { AuthFormInput } from "./AuthFormInput/AuthFormInput";
 import { registerUser } from "../../services/authService";
 import { Link } from "react-router";
 import styles from "./Auth.module.css";
@@ -80,7 +80,7 @@ export default function SignUpPage() {
           </div>
         )}
 
-        <FormInput
+        <AuthFormInput
           id="email"
           label="Email"
           type="email"
@@ -94,7 +94,7 @@ export default function SignUpPage() {
           autoComplete="username"
         />
 
-        <FormInput
+        <AuthFormInput
           id="displayName"
           label="Display Name"
           type="text"
@@ -107,7 +107,7 @@ export default function SignUpPage() {
           errors={fieldErrors.email}
         />
 
-        <FormInput
+        <AuthFormInput
           id="password"
           label="Password"
           type="password"
@@ -121,7 +121,7 @@ export default function SignUpPage() {
           autoComplete="new-password"
         />
 
-        <FormInput
+        <AuthFormInput
           id="confirmPassword"
           label="Confirm password"
           type="password"

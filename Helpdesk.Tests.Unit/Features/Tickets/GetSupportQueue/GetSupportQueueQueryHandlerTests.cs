@@ -204,8 +204,8 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetSupportQueue
 
             var ticket = result.Value.Items.Single();
             ticket.Title.Should().Be("Agent One ticket");
-            ticket.AssignedToId.Should().Be(agent1.Id);
-            ticket.AssigneeDisplayName.Should().Be("Agent One");
+            ticket.AssignedAgentId.Should().Be(agent1.Id);
+            ticket.AssignedAgentDisplayName.Should().Be("Agent One");
         }
 
         [Fact]
@@ -224,8 +224,8 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetSupportQueue
             // Assert
             var ticket = result.Value.Items.Single();
 
-            ticket.AssignedToId.Should().BeNull();
-            ticket.AssigneeDisplayName.Should().BeNull();
+            ticket.AssignedAgentId.Should().BeNull();
+            ticket.AssignedAgentDisplayName.Should().BeNull();
         }
 
         [Fact]
@@ -248,7 +248,7 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetSupportQueue
             var ticket = result.Value.Items.Single();
 
             ticket.CreatedByDisplayName.Should().Be("Customer");
-            ticket.AssigneeDisplayName.Should().Be("Support Agent");
+            ticket.AssignedAgentDisplayName.Should().Be("Support Agent");
         }
 
         [Fact]

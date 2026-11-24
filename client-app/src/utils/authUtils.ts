@@ -1,4 +1,4 @@
-import { Role } from "../types/auth";
+import { Role } from "../types/authTypes";
 
 export function getAuthenticatedUserPath(roles: Role[]): string {
   if (roles.includes(Role.ADMINISTRATOR)) {
@@ -10,7 +10,7 @@ export function getAuthenticatedUserPath(roles: Role[]): string {
   }
 
   if (roles.includes(Role.CUSTOMER)) {
-    return "/my-tickets";
+    return "/dashboard";
   }
 
   return "/unauthorized";

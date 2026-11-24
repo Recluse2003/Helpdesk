@@ -17,25 +17,17 @@ export function parseApiError(error: unknown): ParsedApiError {
   if (axios.isAxiosError<ApiProblemDetails>(error) && error.response?.data) {
     const data = error.response.data;
 
-    // Handles ValidationProblemDetails errors
+    // Handles ValidationProblemDetails and ProblemDetails errors (e.g. InvalidCredentials, EmailNotConfirmed)
     if (data.errors) {
-      // Normalise keys to lowercase so "Email" and "email" both match
-      const normalisedErrors: Record<string, string[]> = {};
+      const normalizedErrors: Record<string, string[]> = {};
+
       for (const [key, messages] of Object.entries(data.errors)) {
-        normalisedErrors[key.toLowerCase()] = messages;
+        normalizedErrors[key.toLowerCase()] = messages;
       }
 
       return {
-        generalError: null,
-        fieldErrors: normalisedErrors,
-      };
-    }
-
-    // Handles ProblemDetails errors (e.g. InvalidCredentials, EmailNotConfirmed)
-    if (data.detail) {
-      return {
-        generalError: data.detail,
-        fieldErrors: {},
+        generalError: data.detail ?? null,
+        fieldErrors: normalizedErrors,
       };
     }
   }

@@ -3,7 +3,7 @@
     position: relative;
     width: auto;
     height: 100%;
-    background-color: var(--bg-nav);
+    background-color: var(--navbar-background);
 }
 
 .profileButton {
@@ -15,7 +15,7 @@
     width: auto;
     height: 100%;
 
-    background-color: var(--bg-nav);
+    background-color: var(--navbar-background);
     border: none;
     border-radius: 6px;
 
@@ -27,7 +27,7 @@
 }
 
 .profileButton:hover {
-    background-color: var(--bg-nav);
+    background-color: var(--navbar-background);
 }
 
 .profileButton span {
@@ -54,10 +54,10 @@
 
     width: 220px;
 
-    background-color: var(--bg-nav);
-    color: var(--text-muted);
+    background-color: var(--navbar-background);
+    color: var(--card-text);
 
-    border: 1px solid var(--border);
+    border: 1px solid var(--navbar-border);
     border-radius: 8px;
 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -73,7 +73,7 @@
 
     padding: 1rem;
 
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--navbar-border);
 }
 
 .dropdownHeader strong {
@@ -82,7 +82,7 @@
 
 .dropdownHeader span {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--card-text-muted);
     overflow-wrap: anywhere;
 }
 
@@ -101,7 +101,7 @@
     width: 100%;
     padding: 0.3rem;
 
-    color: var(--text);
+    color: var(--card-text);
     text-decoration: none;
 
     background: transparent;
@@ -117,7 +117,7 @@
 }
 
 .dropdownItem:hover {
-    background-color: var(--bg-nav-hover);
+    background-color: var(--navbar-background-hover);
 }
 
 
@@ -126,7 +126,7 @@
     width: 100%;
     box-sizing: border-box;
     padding: 0.4rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--card-border);
 }
 
 .logoutButton {
@@ -134,7 +134,7 @@
     width: 100%;
     box-sizing: border-box;
     border-radius: 5px;
-    color: var(--error);
+    color: var(--color-error);
 }
 
 .logoutButton:hover {

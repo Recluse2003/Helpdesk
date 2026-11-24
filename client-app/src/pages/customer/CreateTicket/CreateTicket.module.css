@@ -1,0 +1,198 @@
+.content {
+    display: grid;
+    max-width: 1200px;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas: "form info";
+    gap: 1rem;
+    align-items: start;
+}
+
+.formContainer {
+    grid-area: form;
+    min-width: 0;
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    background-color: var(--card-background);
+    color: var(--card-text)
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+    .content {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "form"
+            "info";
+    }
+
+    .infoSection {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .infoSection {
+        grid-template-columns: 1fr;
+    }
+}
+
+.infoSection {
+    grid-area: info;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.header h1 {
+    color: var(--card-text)
+}
+
+.header p {
+    color: var(--card-text-muted);
+    padding-top: 1rem;
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.formField label {
+    color: var(--card-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.formField input,
+.formField textarea,
+.formField select {
+    width: 100%;
+    padding: 12px 14px;
+    background-color: var(--card-input-background);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--card-input-text);
+    font: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.formField input:focus,
+.formField textarea:focus,
+.formField select:focus {
+    outline: none;
+    border-color: var(--button-primary-background-hover);
+}
+
+.formField textarea {
+    resize: vertical;
+    min-height: 140px;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.formContainer button {
+    background-color: var(--button-primary-background);
+    color: var(--button-primary-text);
+    border: 0;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-weight: bold;
+}
+
+.card button[type="submit"]:hover:not(:disabled) {
+    background-color: var(--button-primary-background-hover);
+}
+
+.formContainer button[type="submit"]:hover:not(:disabled) { 
+    background-color: var(--button-primary-background-hover);
+}
+
+
+.inputError {
+    border-color: var(--color-error) !important;
+}
+
+.fieldError {
+    color: var(--color-error);
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.infoContainer {
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    color: var(--card-text);
+}
+
+.infoHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 16px;
+}
+
+.infoHeading svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.guidanceIcon,
+.guidanceList li::marker {
+    color: #eab308;
+}
+
+.expectationsIcon,
+.expectationsList li::marker {
+    color: #60a5fa;
+}
+
+.formContainer hr,
+.infoContainer hr {
+    border: none;
+    border-top: 1px solid var(--card-border);
+    margin: 0 0 1rem;
+}
+
+.guidanceList,
+.expectationsList {
+    padding-left: 1rem;
+    margin: 0;
+}
+
+.guidanceList li,
+.expectationsList li {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.expectationsList li h3 {
+    display: inline;
+}
+
+.expectationsList h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 3px;
+}
+
+.guidanceList li:last-child,
+.expectationsList li:last-child {
+    margin-bottom: 0;
+}

@@ -23,7 +23,7 @@ export function useApiFormErrors() {
     });
   }, []);
 
-  // Resets everything (useful right before a new form submission)
+  // Resets everything
   const clearAllErrors = useCallback(() => {
     setGeneralError(null);
     setFieldErrors({});

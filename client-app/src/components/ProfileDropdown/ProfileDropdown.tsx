@@ -59,7 +59,7 @@ export default function ProfileDropdown() {
 
     try {
       await logout();
-      navigate("/login", { replace: true });
+      navigate("/auth/login", { replace: true });
     } catch (error) {
       console.error("Logout failed:", error);
     }
