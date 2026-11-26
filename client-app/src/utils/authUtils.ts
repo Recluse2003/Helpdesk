@@ -10,7 +10,7 @@ export function getAuthenticatedUserPath(roles: Role[]): string {
   }
 
   if (roles.includes(Role.CUSTOMER)) {
-    return "/dashboard";
+    return "/tickets/my-tickets";
   }
 
   return "/unauthorized";

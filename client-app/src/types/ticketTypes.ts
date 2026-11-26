@@ -17,3 +17,19 @@ export const TicketStatus = {
 };
 
 export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus];
+
+export const TicketActivityType = {
+  CREATED: "Created",
+  ASSIGNED: "Assigned",
+  REASSIGNED: "Reassigned",
+  UNASSIGNED: "Unassigned",
+  STATUSCHANGED: "StatusChanged",
+  PRIORITYCHANGED: "PriorityChanged",
+  ESCALATIONREQUESTED: "EscalationRequested",
+  ESCALATIONACCEPTED: "EscalationAccepted",
+  ESCALATIONREJECTED: "EscalationRejected",
+  REOPENED: "Reopened",
+};
+
+export type TicketActivityType =
+  (typeof TicketActivityType)[keyof typeof TicketActivityType];

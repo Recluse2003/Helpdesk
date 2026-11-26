@@ -49,7 +49,7 @@ namespace Helpdesk.Api.Features.Tickets.GetTicketsByUserId
                 {
                     TotalTickets = g.Count(),
                     OpenTickets = g.Count(t => t.Status == TicketStatus.Open),
-                    InProgressTickets = g.Count(t => t.Status == TicketStatus.InProgress),
+                    InProgressTickets = g.Count(t => t.Status == TicketStatus.Active),
                     AwaitingCustomerResponseTickets = g.Count(t => t.Status == TicketStatus.AwaitingCustomerResponse),
                     ResolvedTickets = g.Count(t => t.Status == TicketStatus.Resolved),
                     ClosedTickets = g.Count(t => t.Status == TicketStatus.Closed)

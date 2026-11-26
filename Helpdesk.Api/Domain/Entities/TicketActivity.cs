@@ -40,6 +40,12 @@ namespace Helpdesk.Api.Domain.Entities
         public Guid? ActorUserId { get; private set; }
 
         /// <summary>
+        /// Gets the unique identifier of the user targeted by this activity,
+        /// or null if the activity does not target a specific user.
+        /// </summary>
+        public Guid? TargetUserId { get; private set; }
+
+        /// <summary>
         /// Gets the date and time the activity was created.
         /// </summary>
         public DateTime CreatedAt { get; private set; }
@@ -50,12 +56,13 @@ namespace Helpdesk.Api.Domain.Entities
         /// <param name="ticketId">The unique identifier of the associated ticket.</param>
         /// <param name="eventType">The type of activity being recorded.</param>
         /// <param name="actorUserId">The unique identifier of the user performing the activity.</param>
+        /// <param name="actorUserId">The unique identifier of the user being targeted by the activity.</param>
         /// <param name="details">Optional details describing the activity.</param>
         /// <param name="isPublic">Indicates whether the activity is visible to the ticket customer. Defaults to true.</param>
         /// <exception cref="DomainException">
         /// Thrown when the ticket or actor identifier is invalid, or when the activity details exceed 1000 characters.
         /// </exception>
-        public TicketActivity(Guid ticketId, TicketActivityType eventType, Guid? actorUserId, string? details = null, bool isPublic = true)
+        public TicketActivity(Guid ticketId, TicketActivityType eventType, Guid? actorUserId, Guid? targetUserId = null, string? details = null, bool isPublic = true)
         {
             if (details != null && details.Length > 1000)
                 throw new DomainException("A ticket activity's details cannot exceed 1000 characters.");
@@ -72,6 +79,7 @@ namespace Helpdesk.Api.Domain.Entities
             Details = details;
             TicketId = ticketId;
             ActorUserId = actorUserId;
+            TargetUserId = targetUserId;
             CreatedAt = DateTime.UtcNow;
         }
     }

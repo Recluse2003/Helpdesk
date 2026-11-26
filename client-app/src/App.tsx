@@ -9,9 +9,9 @@ import PrivateRoutes from "./components/PrivateRoutes";
 import AuthLayout from "./pages/auth/AuthLayout";
 import MainLayout from "./pages/MainLayout";
 import { Role } from "./types/authTypes";
-import CustomerDashboardPage from "./pages/customer/CustomerDashboardPage";
 import CreateTicketPage from "./pages/customer/CreateTicket/CreateTicketPage";
 import MyTicketsPage from "./pages/customer/MyTickets/MyTicketsPage";
+import AgentDashboardPage from "./pages/agent/Dashboard/AgentDashboardPage";
 
 function App() {
   return (
@@ -28,14 +28,13 @@ function App() {
 
       <Route element={<MainLayout />}>
         <Route element={<PrivateRoutes allowedRoles={[Role.CUSTOMER]} />}>
-          <Route path="/dashboard" element={<CustomerDashboardPage />} />
           <Route path="/tickets/my-tickets" element={<MyTicketsPage />} />
           <Route path="/tickets/create" element={<CreateTicketPage />} />
         </Route>
 
-        <Route
-          element={<PrivateRoutes allowedRoles={[Role.SUPPORTAGENT]} />}
-        ></Route>
+        <Route element={<PrivateRoutes allowedRoles={[Role.SUPPORTAGENT]} />}>
+          <Route path="/agent/dashboard" element={<AgentDashboardPage />} />
+        </Route>
 
         <Route
           element={<PrivateRoutes allowedRoles={[Role.ADMINISTRATOR]} />}

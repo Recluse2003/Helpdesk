@@ -45,11 +45,6 @@ export default function Sidebar({
           <div className={styles.sectionTitle}>WORKSPACE</div>
 
           <div className={styles.links}>
-            <NavLink to="/dashboard" onClick={onClose} title="Dashboard">
-              <LayoutDashboard />
-              <span className={styles.linkText}>Dashboard</span>
-            </NavLink>
-
             {isCustomer && (
               <>
                 <NavLink
@@ -74,6 +69,15 @@ export default function Sidebar({
 
             {isSupportAgent && (
               <>
+                <NavLink
+                  to="/agent/dashboard"
+                  onClick={onClose}
+                  title="Dashboard"
+                >
+                  <LayoutDashboard />
+                  <span className={styles.linkText}>Dashboard</span>
+                </NavLink>
+
                 <NavLink to="/tickets/queue" end onClick={onClose}>
                   <GalleryVerticalEnd />
                   <span className={styles.linkText}>Ticket Queue</span>
@@ -88,6 +92,11 @@ export default function Sidebar({
 
             {isAdmin && (
               <>
+                <NavLink to="/dashboard" onClick={onClose} title="Dashboard">
+                  <LayoutDashboard />
+                  <span className={styles.linkText}>Dashboard</span>
+                </NavLink>
+
                 <NavLink to="/tickets" onClick={onClose}>
                   <Tickets />
                   <span className={styles.linkText}>All Tickets</span>

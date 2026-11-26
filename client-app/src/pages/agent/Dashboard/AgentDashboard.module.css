@@ -1,0 +1,177 @@
+.header {
+    display: flex;
+    flex-direction: column;
+}
+
+.header div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header h1 {
+    color: var(--card-text)
+}
+
+.header p {
+    color: var(--card-text-muted);
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--card-border);
+    margin: 0 0 1rem;
+}
+
+.agentStatistics {
+    display: flex;
+    gap: 1rem;
+}
+
+.agentStatistic {
+    display: flex;
+    flex-direction: column;
+}
+
+.agentStatistic span:first-child {
+    color: var(--card-text-muted);
+    font-size: 0.85rem;
+}
+
+.agentStatistic span:last-child {
+    color: var(--card-text);
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.tickets, .recentActivities {
+    padding: 1rem;
+    background: var(--card-background);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sectionHeader h2 {
+    margin: 0;
+    color: var(--card-text);
+    font-size: 1.125rem;
+}
+
+.sectionHeader a {
+    color: var(--button-primary-background);
+    text-decoration: none;
+}
+
+.ticketList, .activityList {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticketRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--card-border);
+}
+
+.ticketInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.ticketTitle {
+    color: var(--text-card);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ticketTitle:hover {
+    color: var(--button-primary-background-hover);
+}
+
+.ticketId,
+.customerName,
+.ticketUpdated {
+    color: var(--card-text-muted);
+    font-size: 0.8rem;
+}
+
+.ticketBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.emptyMessage {
+    padding: 1rem;
+    color: var(--card-text-muted);
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .ticketRow {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+.activityItem {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--card-border);
+}
+
+.activityIndicator {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: var(--button-primary-background);
+}
+
+.activityContent {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.activityDescription {
+    margin: 0;
+    color: var(--card-text);
+    font-size: 0.9rem;
+}
+
+.activityTicket {
+    color: var(--button-primary-background);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.activityTicket:hover {
+    color: var(--button-primary-background-hover);
+}
+
+.activityDetails {
+    margin: 0;
+    color: var(--card-text-muted);
+    font-size: 0.85rem;
+}
+
+.activityTime {
+    color: var(--card-text-muted);
+    font-size: 0.75rem;
+}

@@ -116,7 +116,7 @@ namespace Helpdesk.Tests.Unit.Features.Tickets.GetSupportQueue
             inProgressTicket.StartProgress();
             await _context.SaveChangesAsync();
 
-            var query = new GetSupportQueueQuery(Status: TicketStatus.InProgress);
+            var query = new GetSupportQueueQuery(Status: TicketStatus.Active);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);

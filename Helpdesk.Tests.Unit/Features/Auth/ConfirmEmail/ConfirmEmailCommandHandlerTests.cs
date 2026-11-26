@@ -5,8 +5,6 @@ using Helpdesk.Tests.Unit.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Moq;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Helpdesk.Tests.Unit.Features.Auth.ConfirmEmail

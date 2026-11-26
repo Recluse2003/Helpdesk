@@ -54,6 +54,11 @@ namespace Helpdesk.Api.Domain.Entities
         /// </summary>
         public DateTime UpdatedAt { get; private set; }
 
+        /// <summary>
+        /// Gets the date and time the ticket was resolved at.
+        /// </summary>
+        public DateTime? ResolvedAt { get; private set; }
+
         private readonly List<TicketMessage> _messages = [];
         private readonly List<TicketActivity> _activities = [];
         private readonly List<EscalationRequest> _escalationRequests = [];
@@ -153,6 +158,7 @@ namespace Helpdesk.Api.Domain.Entities
                 Id,
                 TicketActivityType.Assigned,
                 agentId,
+                null,
                 $"Ticket claimed by {agentDisplayName}."));
         }
 
@@ -192,12 +198,6 @@ namespace Helpdesk.Api.Domain.Entities
             if (string.IsNullOrWhiteSpace(assigneeDisplayName))
                 throw new DomainException("A valid assignee display name must be specified.");
 
-            // Determines the details recorded as a ticket activity, based on if the ticket is being reassigned from a 
-            // previous support agent. 
-            string details = AssignedToId == null ?
-                $"{assignerDisplayName} assigned the ticket to {assigneeDisplayName}." :
-                $"{assignerDisplayName} reassigned the ticket from {oldAssigneeDisplayName} to {assigneeDisplayName}.";
-
             AssignedToId = assigneeId;
             UpdatedAt = DateTime.UtcNow;
 
@@ -205,7 +205,7 @@ namespace Helpdesk.Api.Domain.Entities
                     Id,
                     TicketActivityType.Assigned,
                     assignerId,
-                    details));
+                    assigneeId));
         }
 
         /// <summary>
@@ -236,6 +236,7 @@ namespace Helpdesk.Api.Domain.Entities
                 Id,
                 TicketActivityType.PriorityChanged,
                 agentId,
+                null,
                 $"Ticket priority changed from {previousPriority} to {priority}."));
         }
 
@@ -250,7 +251,7 @@ namespace Helpdesk.Api.Domain.Entities
             if (Status != TicketStatus.Open)
                 throw new DomainException("Only open tickets can be moved into progress.");
 
-            Status = TicketStatus.InProgress;
+            Status = TicketStatus.Active;
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -312,7 +313,7 @@ namespace Helpdesk.Api.Domain.Entities
         /// </exception>
         public void Resolve()
         {
-            if (Status is not TicketStatus.Open and not TicketStatus.InProgress)
+            if (Status is not TicketStatus.Open and not TicketStatus.Active)
                 throw new DomainException("Only open or in-progress tickets can be resolved.");
 
             Status = TicketStatus.Resolved;

@@ -74,7 +74,7 @@ public class ChangeTicketPriorityCommandHandlerTests
         if (assignedAgentId.HasValue)
             ticket.Claim(assignedAgentId.Value, "Test Agent");
 
-        if (status == TicketStatus.InProgress)
+        if (status == TicketStatus.Active)
             ticket.StartProgress();
 
         if (status == TicketStatus.Resolved)

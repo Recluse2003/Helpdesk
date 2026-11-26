@@ -13,7 +13,7 @@
         /// <summary>
         /// A support agent is actively working on the ticket.
         /// </summary>
-        InProgress,
+        Active,
 
         /// <summary>
         /// The support agent needs additional information or a response from the customer to continue. 

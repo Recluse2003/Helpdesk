@@ -39,6 +39,11 @@ namespace Helpdesk.Api.Infrastructure.Persistence.Configurations
                 .HasForeignKey(ta => ta.ActorUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(ta => ta.TargetUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(er => er.TicketId);
         }
     }

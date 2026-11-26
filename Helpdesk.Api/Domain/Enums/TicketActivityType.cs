@@ -16,6 +16,11 @@
         Assigned,
 
         /// <summary>
+        /// The ticket was reassigned to another support agent.
+        /// </summary>
+        Reassigned,
+
+        /// <summary>
         /// The ticket was unassigned from its current support agent.
         /// </summary>
         Unassigned,
@@ -43,6 +48,11 @@
         /// <summary>
         /// An escalation request was declined.
         /// </summary>
-        EscalationRejected
+        EscalationRejected,
+
+        /// <summary>
+        /// A closed ticket has been reopened.
+        /// </summary>
+        Reopened
     }
 }
