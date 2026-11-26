@@ -54,6 +54,7 @@ namespace Helpdesk.Api.Domain.Entities
         /// </summary>
         public DateTime UpdatedAt { get; private set; }
 
+        /// Gets the date and time the ticket was resolved updated.
         private readonly List<TicketMessage> _messages = [];
         private readonly List<TicketActivity> _activities = [];
         private readonly List<EscalationRequest> _escalationRequests = [];
