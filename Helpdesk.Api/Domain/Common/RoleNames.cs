@@ -24,5 +24,10 @@
         /// requests.
         /// </summary>
         public const string Administrator = "Administrator";
+
+        public static bool IsValid(string? role)
+        {
+            return role is Customer or SupportAgent or Administrator;
+        }
     }
 }

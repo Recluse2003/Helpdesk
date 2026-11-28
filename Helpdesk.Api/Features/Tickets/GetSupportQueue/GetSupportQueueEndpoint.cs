@@ -51,5 +51,4 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         TicketPriority? Priority = null,
         Guid? CustomerId = null,
         Guid? AssigneeId = null);
-    
 }
