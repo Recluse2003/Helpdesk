@@ -38,17 +38,40 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
                 .AsNoTracking()
                 .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                var searchTerm = query.SearchTerm.Trim();
+                var isGuid = Guid.TryParse(searchTerm, out var searchId);
+
+                baseQuery = baseQuery.Where(t =>
+                    t.Title.Contains(searchTerm) ||
+
+                    (isGuid &&
+                        (t.Id == searchId ||
+                         t.CreatedById == searchId ||
+                         t.AssignedToId == searchId)) ||
+
+                    _context.Users.Any(u =>
+                        u.Id == t.CreatedById &&
+                        u.DisplayName.Contains(searchTerm)) ||
+
+                    _context.Users.Any(u =>
+                        u.Id == t.AssignedToId &&
+                        u.DisplayName.Contains(searchTerm))
+                );
+            }
+
             if (query.Status.HasValue)
                 baseQuery = baseQuery.Where(t => t.Status == query.Status.Value);
 
             if (query.Priority.HasValue)
                 baseQuery = baseQuery.Where(t => t.Priority == query.Priority.Value);
 
-            if (query.CustomerId.HasValue)
-                baseQuery = baseQuery.Where(t => t.CreatedById == query.CustomerId.Value);
-
             if (query.AssigneeId.HasValue)
                 baseQuery = baseQuery.Where(t => t.AssignedToId == query.AssigneeId.Value);
+
+            if (query.UnassignedOnly)
+                baseQuery = baseQuery.Where(t => t.AssignedToId == null);
 
             int total = await baseQuery.CountAsync(cancellationToken);
 

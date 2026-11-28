@@ -4,6 +4,7 @@ using Helpdesk.Api.Shared.Extensions;
 using Helpdesk.Api.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
 {
@@ -25,19 +26,26 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         }
 
         private static async Task<IResult> Handle(
+            ClaimsPrincipal user,
             [AsParameters] GetSupportQueueRequest request,
             [FromServices] ISender mediator,
             CancellationToken cancellationToken)
         {
+            var userIdClaim = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return Results.Unauthorized();
+
             var query = new GetSupportQueueQuery(
-                request.PageNumber,
-                request.PageSize,
-                request.Status,
-                request.Priority,
-                request.CustomerId,
-                request.AssigneeId,
-                request.SortBy, 
-                request.SortDescending
+                PageNumber: request.PageNumber,
+                PageSize: request.PageSize,
+                Status: request.Status,
+                Priority: request.Priority,
+                SearchTerm: request.SearchTerm,
+                AssigneeId: request.AssignedToMe ? userId : request.AssigneeId,
+                UnassignedOnly: request.UnassignedOnly,
+                SortBy: request.SortBy,
+                SortDescending: request.SortDescending
             );
 
             var result = await mediator.Send(query, cancellationToken);
@@ -51,8 +59,11 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         int PageSize = 10,
         TicketStatus? Status = null,
         TicketPriority? Priority = null,
-        Guid? CustomerId = null,
+        string? SearchTerm = null,
         Guid? AssigneeId = null,
+        bool AssignedToMe = false,
+        bool UnassignedOnly = false,
         TicketSortBy SortBy = TicketSortBy.UpdatedAt,
-        bool SortDescending = true);
+        bool SortDescending = true
+    );
 }
