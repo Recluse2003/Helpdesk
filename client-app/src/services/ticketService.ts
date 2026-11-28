@@ -69,7 +69,19 @@ export interface GetSupportQueueRequest {
   priority?: TicketPriority;
   customerId?: string;
   assigneeId?: string;
+  sortBy?: TicketSortBy;
+  sortDescending?: boolean;
 }
+
+export const TicketSortBy = {
+  CREATED_AT: "CreatedAt",
+  UPDATED_AT: "UpdatedAt",
+  PRIORITY: "Priority",
+  STATUS: "Status",
+  TITLE: "Title",
+} as const;
+
+export type TicketSortBy = (typeof TicketSortBy)[keyof typeof TicketSortBy];
 
 export interface QueueTicketDto {
   id: string;

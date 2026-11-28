@@ -52,7 +52,35 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
 
             int total = await baseQuery.CountAsync(cancellationToken);
 
-            var tickets = await baseQuery
+            var orderedQuery = query.SortBy switch
+            {
+                TicketSortBy.CreatedAt => query.SortDescending
+                    ? baseQuery.OrderByDescending(t => t.CreatedAt)
+                    : baseQuery.OrderBy(t => t.CreatedAt),
+
+                TicketSortBy.UpdatedAt => query.SortDescending
+                    ? baseQuery.OrderByDescending(t => t.UpdatedAt)
+                    : baseQuery.OrderBy(t => t.UpdatedAt),
+
+                TicketSortBy.Priority => query.SortDescending
+                    ? baseQuery.OrderByDescending(t => t.Priority)
+                    : baseQuery.OrderBy(t => t.Priority),
+
+                TicketSortBy.Status => query.SortDescending
+                    ? baseQuery.OrderByDescending(t => t.Status)
+                    : baseQuery.OrderBy(t => t.Status),
+
+                TicketSortBy.Title => query.SortDescending
+                    ? baseQuery.OrderByDescending(t => t.Title)
+                    : baseQuery.OrderBy(t => t.Title),
+
+                _ => baseQuery.OrderByDescending(t => t.UpdatedAt)
+            };
+
+            var tickets = await orderedQuery
+                .ThenBy(t => t.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Join(
                     _context.Users,
                     ticket => ticket.CreatedById,
@@ -67,34 +95,21 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
                 )
                 .SelectMany(
                     x => x.users.DefaultIfEmpty(),
-                    (x, assignee) => new
-                    {
-                        Ticket = x.ticket,
-                        CustomerDisplayName = x.customer.DisplayName,
-                        AssigneeDisplayName = assignee == null
-                            ? null
-                            : assignee.DisplayName
-                    }
+                    (x, assignee) => new QueueTicketDto(
+                        x.ticket.Id,
+                        x.ticket.Title,
+                        x.ticket.Status,
+                        x.ticket.Priority,
+                        x.ticket.CreatedAt,
+                        x.ticket.UpdatedAt,
+                        x.ticket.CreatedById,
+                        x.customer.DisplayName,
+                        null,
+                        x.ticket.AssignedToId,
+                        assignee == null ? null : assignee.DisplayName,
+                        null
+                    )
                 )
-                // Order using entity properties before constructing the DTO.
-                .OrderByDescending(x => x.Ticket.UpdatedAt)
-                .ThenBy(x => x.Ticket.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .Select(x => new QueueTicketDto(
-                    x.Ticket.Id,
-                    x.Ticket.Title,
-                    x.Ticket.Status,
-                    x.Ticket.Priority,
-                    x.Ticket.CreatedAt,
-                    x.Ticket.UpdatedAt,
-                    x.Ticket.CreatedById,
-                    x.CustomerDisplayName,
-                    null,
-                    x.Ticket.AssignedToId,
-                    x.AssigneeDisplayName,
-                    null
-                ))
                 .ToListAsync(cancellationToken);
 
             PagedList<QueueTicketDto> result = new(tickets, pageNumber, pageSize, total);

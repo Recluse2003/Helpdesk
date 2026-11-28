@@ -1,6 +1,5 @@
 ﻿using Helpdesk.Api.Domain.Common;
 using Helpdesk.Api.Domain.Enums;
-using Helpdesk.Api.Features.Tickets.GetSupportQueue;
 using MediatR;
 
 namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
@@ -24,6 +23,8 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         TicketStatus? Status = null, 
         TicketPriority? Priority = null, 
         Guid? CustomerId = null, 
-        Guid? AssigneeId = null
+        Guid? AssigneeId = null,
+        TicketSortBy SortBy = TicketSortBy.UpdatedAt,
+        bool SortDescending = true
     ) : IRequest<Result<PagedList<QueueTicketDto>>>;
 }

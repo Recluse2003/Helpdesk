@@ -35,7 +35,9 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
                 request.Status,
                 request.Priority,
                 request.CustomerId,
-                request.AssigneeId
+                request.AssigneeId,
+                request.SortBy, 
+                request.SortDescending
             );
 
             var result = await mediator.Send(query, cancellationToken);
@@ -50,5 +52,7 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
         TicketStatus? Status = null,
         TicketPriority? Priority = null,
         Guid? CustomerId = null,
-        Guid? AssigneeId = null);
+        Guid? AssigneeId = null,
+        TicketSortBy SortBy = TicketSortBy.UpdatedAt,
+        bool SortDescending = true);
 }

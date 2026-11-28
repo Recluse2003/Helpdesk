@@ -24,6 +24,10 @@ namespace Helpdesk.Api.Features.Tickets.GetSupportQueue
             RuleFor(x => x.Priority)
                 .Must(priority => !priority.HasValue || Enum.IsDefined(priority.Value))
                 .WithMessage("The specified ticket priority is invalid.");
+
+            RuleFor(x => x.SortBy)
+                .IsInEnum()
+                .WithMessage("The specified sort option is invalid.");
         }
 
     }
